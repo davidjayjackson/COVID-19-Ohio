@@ -1,0 +1,90 @@
+---
+title:  "Analysis of COVID-19 Data for the  State Of Ohio"
+author: "David J Jackson"
+date: "04/03/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(fig.width=9, fig.height=6)
+library(tidyverse)
+library(RSQLite)
+library(plotly)
+```
+
+### Disclaimer:
+* This is a personel project, 
+* I am not a employee of the state of Ohio. 
+* I am not employed in either the medical or data sceince fields.
+
+### Data Source: NY Times
+* GitHub: https://github.com/nytimes/covid-19-data.git
+
+
+```{r, echo=FALSE}
+rm(list=ls())
+us_states <- data.table::fread("../NYT_covid-19-data/us-states.csv")
+
+us_total <- us_states %>% group_by(date) %>% 
+summarise(Cases=sum(cases), Deaths = sum(deaths),  DeathRate = Deaths/Cases)
+us_state_total <- us_states %>% group_by(state,date) %>% 
+  summarise(Cases=sum(cases),                                                             Deaths = sum(deaths),                                                    
+   DeathRate = Deaths/Cases)
+
+```
+```{r,echo=FALSE}
+us_counties <- data.table::fread("../NYT_covid-19-data/us-counties.csv")
+us_county_summary <- us_counties %>% group_by(state,county,date) %>% summarise(Cases=sum(cases),                                                        Deaths = sum(deaths),DeathRate = Deaths/Cases)
+
+```
+
+
+### Summary of Cases,Deaths  and Death Rage by Date
+
+```{r,echo=FALSE}
+us_total %>% plot_ly() %>% add_lines(x=~date,y=~Cases) %>%
+  layout(title="US Daily Summary of Cases")
+
+us_total %>% plot_ly() %>% add_lines(x=~date,y=~Deaths) %>%
+  layout(title="US Daily Summary of Deaths")
+
+us_total %>% plot_ly() %>% add_lines(x=~date,y=~DeathRate) %>%
+  layout(title="US Daily Rate of Death")
+```
+
+### Summary of Cases and Deaths by State
+
+```{r,echo=FALSE}
+ sc <- ggplot(us_state_total) + geom_col(aes(x=date,y=Cases,fill=state)) +
+  labs(title="Daily Cases Summary by Date") 
+ggplotly(sc)
+
+sd <- ggplot(us_state_total) + geom_col(aes(x=date,y=Deaths,fill=state)) +
+  labs(title="Daily Deaths Summary by State") 
+ggplotly(sd)
+
+```
+
+### Summary of Ohio Deaths and Cases
+
+```{r,echo=FALSE}
+
+ohio_counties <- us_county_summary %>% filter(state=="Ohio")
+oh1 <- ggplot(ohio_counties) + geom_col(aes(x=date,y=Cases)) +
+  labs(title="Ohio Daily Cases Summary by Date")
+ggplotly(oh1)
+
+oh2 <- ggplot(ohio_counties) + geom_col(aes(x=date,y=Deaths)) +
+  labs(title="Ohio Daily Deaths Summary by Date")
+ggplotly(oh2)
+```
+```{r,echo=FALSE}
+oh3 <- ggplot(ohio_counties) + geom_col(aes(x=date,y=Cases,fill=county)) +
+  labs(title="Ohio/county Daily Cases Summary by Date")
+ggplotly(oh3)
+
+oh4 <- ggplot(ohio_counties) + geom_col(aes(x=date,y=Deaths,fill=county)) +
+  labs(title="Ohio/County Daily Deaths Summary by Date")
+ggplotly(oh4)
+```
