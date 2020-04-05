@@ -62,7 +62,7 @@ us_total %>% plot_ly() %>% add_bars(x=~date,y=~DeathRate) %>%
   labs(title="Daily Cases Summary by Date") +
   theme(axis.text.x = element_text(angle = 45)) + 
   scale_y_continuous(labels = scales::comma) +
-  scale_x_date(breaks = "1 week")
+  scale_x_date(breaks = "1 week") + theme_gray()
 
 ggplotly(sc)
 
@@ -70,7 +70,7 @@ sd <- ggplot(us_state_total) + geom_col(aes(x=date,y=Deaths,fill=state)) +
   scale_x_date(breaks = "1 week") +
   theme(axis.text.x = element_text(angle = 45)) +
   labs(title="Daily Deaths Summary by State") +
-  scale_y_continuous(labels = scales::comma) 
+  scale_y_continuous(labels = scales::comma) + theme_gray()
 ggplotly(sd)
 
 ```
@@ -82,22 +82,22 @@ ggplotly(sd)
 ohio_counties <- us_county_summary %>% filter(state=="Ohio")
 oh1 <- ggplot(ohio_counties) + geom_col(aes(x=date,y=Cases)) +
   theme(axis.text.x = element_text(angle = 45)) +
-  labs(title="Ohio Daily Cases Summary by Date") 
+  labs(title="Ohio Daily Cases Summary by Date") + theme_gray()
   ggplotly(oh1)
 
 oh2 <- ggplot(ohio_counties) + geom_col(aes(x=date,y=Deaths)) +
   labs(title="Ohio Daily Deaths Summary by Date") +
-  theme(axis.text.x = element_text(angle = 45))
+  theme(axis.text.x = element_text(angle = 45)) + theme_gray()
 ggplotly(oh2)
 ```
 ```{r,echo=FALSE}
 oh3 <- ggplot(ohio_counties) + geom_col(aes(x=date,y=Cases,fill=county)) +
   labs(title="Ohio/county Daily Cases Summary by Date") +
-  theme(axis.text.x = element_text(angle = 45))
+  theme(axis.text.x = element_text(angle = 45)) + theme_gray()
 ggplotly(oh3)
 
 oh4 <- ggplot(ohio_counties) + geom_col(aes(x=date,y=Deaths,fill=county)) +
   labs(title="Ohio/County Daily Deaths Summary by Date") +
-  theme(axis.text.x = element_text(angle = 45))
+  theme(axis.text.x = element_text(angle = 45)) + theme_gray()
 ggplotly(oh4)
 ```
