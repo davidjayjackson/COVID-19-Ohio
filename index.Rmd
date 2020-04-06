@@ -37,7 +37,7 @@ us_state_total <- us_states %>% group_by(state,date) %>%
 ```{r,echo=FALSE}
 us_counties <- data.table::fread("../NYT_covid-19-data/us-counties.csv")
 us_counties$date <- as.Date(us_counties$date)
-us_county_summary <- us_counties %>% group_by(state,county,date) %>% summarise(Cases=sum(cases),                                                Deaths = sum(deaths),DeathRate = Deaths/Cases)
+us_county_summary <- us_counties %>% group_by(state,county,date) %>% summarise(Cases=sum(cases),Deaths = sum(deaths),DeathRate = Deaths/Cases)
 
 ```
 
