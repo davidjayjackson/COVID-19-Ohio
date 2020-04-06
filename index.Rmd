@@ -42,7 +42,7 @@ us_county_summary <- us_counties %>% group_by(state,county,date) %>% summarise(C
 ```
 
 
-### Summary of Cases,Deaths  and Death Rage by Date
+### Accumulated Daily Totals for Cases,Deaths  by Date
 
 ```{r,echo=FALSE}
 us_total %>% plot_ly() %>% add_bars(x=~date,y=~Cases) %>%
@@ -55,7 +55,7 @@ us_total %>% plot_ly() %>% add_bars(x=~date,y=~DeathRate) %>%
   layout(title="US Daily Rate of Death")
 ```
 
-### Summary of Cases and Deaths by State
+### Accumulated  Cases and Deaths by State and Date
 
 ```{r,echo=FALSE}
  sc <- ggplot(us_state_total) + geom_col(aes(x=date,y=Cases,fill=state)) +
@@ -75,7 +75,7 @@ ggplotly(sd)
 
 ```
 
-### Summary of Ohio Deaths and Cases
+### Accumulated Daily  Deaths and Cases Totals for   Ohio
 
 ```{r,echo=FALSE}
 
