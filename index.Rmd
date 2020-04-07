@@ -40,6 +40,68 @@ us_counties$date <- as.Date(us_counties$date)
 us_county_summary <- us_counties %>% group_by(state,county,date) %>% summarise(Cases=sum(cases),Deaths = sum(deaths),DeathRate = Deaths/Cases)
 
 ```
+```{r,echo=FALSE}
+STATESDAILY <-  us_states %>% 
+  group_by(date, state) %>%
+  summarise(
+    TotalCases = sum(cases, na.rm=TRUE),
+    TotalDeaths = sum(deaths, na.rm=TRUE)
+  ) %>%
+  group_by(state) %>%
+  arrange(desc(date)) %>%
+  mutate(
+    PreviousTotalCases = lead(TotalCases),
+    PreviousTotalDeaths = lead(TotalDeaths)
+  ) %>%
+  ungroup() %>%
+  na.omit()
+STATESDAILY <- STATESDAILY %>% mutate(new_cases = TotalCases - PreviousTotalCases)
+STATESDAILY <- STATESDAILY %>% mutate(new_deaths = TotalDeaths - PreviousTotalDeaths)
+STATESDAILY <- STATESDAILY %>% mutate(death_rate = new_deaths / new_cases)
+STATESDAILY$date <- as.character(STATESDAILY$date)
+db <- dbConnect(SQLite(), dbname="../db/CORVID.sqlite3")
+dbWriteTable(db, "STATESDAILY",STATESDAILY ,overwrite=TRUE)
+```
+
+```{r,echo=FALSE}
+COUNTYDAILY <-  us_counties %>% 
+  group_by(date,state, county) %>%
+  summarise(
+    TotalCases = sum(cases, na.rm=TRUE),
+    TotalDeaths = sum(deaths, na.rm=TRUE)
+  ) %>%
+  group_by(state,county) %>%
+  arrange(desc(date)) %>%
+  mutate(
+    PreviousTotalCases = lead(TotalCases),
+    PreviousTotalDeaths = lead(TotalDeaths)
+  ) %>%
+  ungroup() %>%
+  na.omit()
+COUNTYDAILY <- COUNTYDAILY%>% mutate(new_cases = TotalCases - PreviousTotalCases)
+COUNTYDAILY <- COUNTYDAILY%>% mutate(new_deaths = TotalDeaths - PreviousTotalDeaths)
+COUNTYDAILY <- COUNTYDAILY%>% mutate(death_rate = new_deaths/new_cases)
+COUNTYDAILY$date <- as.character(COUNTYDAILY$date)
+dbWriteTable(db, "COUNTYDAILY",COUNTYDAILY,overwrite=TRUE)
+```
+###  US Totals for Cases,Deaths  by Date
+
+```{r,echo=FALSE}
+STATESDAILY %>% plot_ly() %>% add_bars(x=~date,y=~new_cases) %>%
+  layout(title="US Total Daily Cases by Date")
+
+STATESDAILY %>% plot_ly() %>% add_bars(x=~date,y=~new_deaths) %>%
+  layout(title="US Total Deaths by Date")
+
+STATESDAILY %>% plot_ly() %>% add_bars(x=~date,y=~death_rate) %>%
+  layout(title="US Daily Rate of Death")
+```
+
+
+
+
+
+
 
 
 ### Accumulated Daily Totals for Cases,Deaths  by Date
