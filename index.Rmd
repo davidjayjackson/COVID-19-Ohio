@@ -119,17 +119,16 @@ us_total %>% plot_ly() %>% add_bars(x=~date,y=~DeathRate) %>%
 ### Accumulated  Cases and Deaths by State and Date
 
 ```{r,echo=FALSE}
+
+
 ggplot(us_state_total) + geom_col(aes(x=date,y=Cases,fill=state)) +
   labs(title="Daily Accumulated Cases by Date") +
-  theme(axis.text.x = element_text(angle = 90)) + 
+  theme(axis.text.x = element_text(angle = 45)) +
   scale_y_continuous(labels = scales::comma) +
-  scale_x_date(breaks = "1 week") + theme_gray()
-
-
+   theme_gray()
 
 ggplot(us_state_total) + geom_col(aes(x=date,y=Deaths,fill=state)) +
-  scale_x_date(breaks = "1 week") +
-  theme(axis.text.x = element_text(angle = 90)) +
+    theme(axis.text.x = element_text(angle = 90)) +
   labs(title="Daily Accumulated Deaths by State") +
   scale_y_continuous(labels = scales::comma) + theme_gray()
 
