@@ -84,25 +84,24 @@ COUNTYDAILY <- COUNTYDAILY%>% mutate(death_rate = new_deaths/new_cases)
 COUNTYDAILY$date <- as.character(COUNTYDAILY$date)
 dbWriteTable(db, "COUNTYDAILY",COUNTYDAILY,overwrite=TRUE)
 ```
+
 ###  US Totals for Cases,Deaths  by Date
 
-```{r,echo=FALSE}
-STATESDAILY %>% plot_ly() %>% add_bars(x=~date,y=~new_cases) %>%
-  layout(title="US Total Daily Cases by Date")
 
-STATESDAILY %>% plot_ly() %>% add_bars(x=~date,y=~new_deaths) %>%
-  layout(title="US Total Deaths by Date")
+```{r}
+STATESDAILY %>% filter(new_cases >0) %>% ggplot() + geom_col(aes(x=date,y=new_cases)) +
+      labs(title="US Total Daily Cases by Date") +
+     theme(axis.text.x = element_text(angle = 45))
 
-STATESDAILY %>% plot_ly() %>% add_bars(x=~date,y=~death_rate) %>%
-  layout(title="US Daily Rate of Death")
+STATESDAILY %>% filter(new_deaths >0)%>% ggplot() + geom_col(aes(x=date,y=new_deaths)) +
+      labs(title="US Total Daily Deaths by Date") +
+   theme(axis.text.x = element_text(angle = 45))
+
+STATESDAILY %>% filter(new_cases >0) %>% ggplot() + geom_col(aes(x=date,y=death_rate)) +
+      labs(title="US Death Rate by Date") +
+   theme(axis.text.x = element_text(angle = 45))
+
 ```
-
-
-
-
-
-
-
 
 ### Accumulated Daily Totals for Cases,Deaths  by Date
 
@@ -120,20 +119,20 @@ us_total %>% plot_ly() %>% add_bars(x=~date,y=~DeathRate) %>%
 ### Accumulated  Cases and Deaths by State and Date
 
 ```{r,echo=FALSE}
- sc <- ggplot(us_state_total) + geom_col(aes(x=date,y=Cases,fill=state)) +
+ggplot(us_state_total) + geom_col(aes(x=date,y=Cases,fill=state)) +
   labs(title="Daily Accumulated Cases by Date") +
-  theme(axis.text.x = element_text(angle = 45)) + 
+  theme(axis.text.x = element_text(angle = 90)) + 
   scale_y_continuous(labels = scales::comma) +
   scale_x_date(breaks = "1 week") + theme_gray()
 
-ggplotly(sc)
 
-sd <- ggplot(us_state_total) + geom_col(aes(x=date,y=Deaths,fill=state)) +
+
+ggplot(us_state_total) + geom_col(aes(x=date,y=Deaths,fill=state)) +
   scale_x_date(breaks = "1 week") +
-  theme(axis.text.x = element_text(angle = 45)) +
+  theme(axis.text.x = element_text(angle = 90)) +
   labs(title="Daily Accumulated Deaths by State") +
   scale_y_continuous(labels = scales::comma) + theme_gray()
-ggplotly(sd)
+
 
 ```
 
@@ -142,24 +141,23 @@ ggplotly(sd)
 ```{r,echo=FALSE}
 
 ohio_counties <- us_county_summary %>% filter(state=="Ohio")
-oh1 <- ggplot(ohio_counties) + geom_col(aes(x=date,y=Cases)) +
-  theme(axis.text.x = element_text(angle = 45)) +
+ggplot(ohio_counties) + geom_col(aes(x=date,y=Cases)) +
+  theme(axis.text.x = element_text(angle = 90)) +
   labs(title="Ohio Daily Accumulated Cases by Date") + theme_gray()
-  ggplotly(oh1)
 
-oh2 <- ggplot(ohio_counties) + geom_col(aes(x=date,y=Deaths)) +
+
+ggplot(ohio_counties) + geom_col(aes(x=date,y=Deaths)) +
   labs(title="OhioAccumulated Deaths by Date") +
-  theme(axis.text.x = element_text(angle = 45)) + theme_gray()
-ggplotly(oh2)
+  theme(axis.text.x = element_text(angle = 90)) + theme_gray()
+
 ```
 ```{r,echo=FALSE}
-oh3 <- ggplot(ohio_counties) + geom_col(aes(x=date,y=Cases,fill=county)) +
+ggplot(ohio_counties) + geom_col(aes(x=date,y=Cases,fill=county)) +
   labs(title="Ohio/county Accumulated Cases by Date") +
-  theme(axis.text.x = element_text(angle = 45)) + theme_gray()
-ggplotly(oh3)
+  theme(axis.text.x = element_text(angle = 90)) + theme_gray()
 
-oh4 <- ggplot(ohio_counties) + geom_col(aes(x=date,y=Deaths,fill=county)) +
+ggplot(ohio_counties) + geom_col(aes(x=date,y=Deaths,fill=county)) +
   labs(title="Ohio/County Accumulated Deaths by Date") +
-  theme(axis.text.x = element_text(angle = 45)) + theme_gray()
-ggplotly(oh4)
+  theme(axis.text.x = element_text(angle = 90)) + theme_gray()
+
 ```
