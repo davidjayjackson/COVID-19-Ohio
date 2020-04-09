@@ -89,10 +89,11 @@ dbWriteTable(db, "COUNTYDAILY",COUNTYDAILY,overwrite=TRUE)
 
 
 ```{r}
-STATESDAILY %>% filter(new_cases >0) %>% ggplot() + geom_col(aes(x=date,y=new_cases)) +
+STATESDAILY %>% filter(new_cases >0) %>% ggplot() + 
+  geom_col(aes(x=date,y=new_cases)) +
       labs(title="US Total Daily Cases by Date") +
-     theme(axis.text.x = element_text(angle = 45))
-
+     theme(axis.text.x = element_text(angle = 45)) 
+    
 STATESDAILY %>% filter(new_deaths >0)%>% ggplot() + geom_col(aes(x=date,y=new_deaths)) +
       labs(title="US Total Daily Deaths by Date") +
    theme(axis.text.x = element_text(angle = 45))
