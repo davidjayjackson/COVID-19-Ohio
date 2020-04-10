@@ -1,0 +1,72 @@
+---
+title: "Ohio COVID-19 Maps"
+author: "David J Jackson"
+date: "4/9/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(fig.width=9, fig.height=6)
+library(tidyverse)
+library(RSQLite)
+library(choroplethrMaps)
+library(sf)
+
+```
+
+### Disclaimer:
+* This is a personel project, 
+* I am not a employee of the state of Ohio. 
+* I am not employed in either the medical or data sceince fields.
+
+### Data Source: NY Times
+* GitHub: https://github.com/nytimes/covid-19-data.git
+
+```{r,echo=FALSE}
+rm(list=ls())
+db <- dbConnect(SQLite(), dbname="../db/CORVID.sqlite3")
+BUCKEYE <- dbGetQuery(db, "SELECT county,date,cases,deaths FROM us_counties 
+                 WHERE state ='Ohio'")
+colnames(BUCKEYE) <- c("NAME","date","cases","deaths")
+BUCKEYE$date <- as.Date(BUCKEYE$date)
+data(county.map)
+dbDisconnect(db)
+```
+
+```{r,ech=FALSE}
+county_totals <- BUCKEYE %>% select(NAME,cases,deaths)%>% group_by(NAME) %>% 
+  summarise(tc = sum(cases),td = sum(deaths))
+countyMAP <- inner_join(county.map,county_totals)
+
+```
+
+### Map of Total Cases by Ohio Counties as of Apr. 9,2020
+
+```{r,echo=FALSE}
+countyMAP %>%
+      filter(STATE == 39) %>%
+      ggplot(aes(x = long, y = lat, group = group,fill=tc)) +
+      geom_polygon(color = "black", size = 0.1) +
+  labs(title="Ohio: Summary of Total Cases by County")
+  
+```
+
+
+### Map of Total Deaths by Ohio Counties as of Apr. 9,2020
+
+```{r,echo=FALSE}
+countyMAP %>%
+      filter(STATE == 39) %>%
+      ggplot(aes(x = long, y = lat, group = group,fill=td)) +
+      geom_polygon(color = "black", size = 0.1) +
+  labs(title="Ohio: Summary of Total Deaths by County")
+  
+```
+
+### Summary of Deaths and Cases by County
+
+```{r, echo=FALSE}
+county_totals %>% DT::datatable() 
+```
+
