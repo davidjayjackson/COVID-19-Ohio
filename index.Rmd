@@ -1,7 +1,7 @@
 ---
 title:  "Analysis of COVID-19 Data for the  State Of Ohio"
 author: "David J Jackson"
-date: "Apr. 10, 2010 07:20PM EDT"
+date: "Apr. 10, 2010 07:40PM EDT"
 output: html_document
 ---
 
