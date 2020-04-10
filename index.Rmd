@@ -1,7 +1,7 @@
 ---
 title:  "Analysis of COVID-19 Data for the  State Of Ohio"
 author: "David J Jackson"
-date: "Apr. 10, 2010 03:20PM EDT"
+date: "Apr. 10, 2010 07:20PM EDT"
 output: html_document
 ---
 
@@ -13,19 +13,26 @@ library(RSQLite)
 library(plotly)
 ```
 
-### Disclaimer:
+#### Disclaimer:
 * This is a personel project, 
 * I am not a employee of the state of Ohio. 
 * I am not employed in either the medical or data sceince fields.
 
-### Data Source: NY Times
+#### Data Source: NY Times
 * GitHub: https://github.com/nytimes/covid-19-data.git
 
 
 ```{r, echo=FALSE}
 rm(list=ls())
-us_states <- data.table::fread("../NYT_covid-19-data/us-states.csv")
-us_states$date <-as.Date(us_states$date)
+db <- dbConnect(SQLite(), dbname="../db/CORVID.sqlite3")
+
+us_states <- dbGetQuery(db, "SELECT state,date,cases,deaths FROM us_states
+                        WHERE state='Ohio';")
+us_counties <- dbGetQuery(db, "SELECT state,county,date,cases,deaths FROM us_counties
+                          WHERE state='Ohio';")
+```
+```{r,echo=FALSE}
+  us_states$date <-as.Date(us_states$date)
 us_total <- us_states %>% group_by(date) %>% 
 summarise(Cases=sum(cases), Deaths = sum(deaths),  DeathRate = Deaths/Cases)
 
@@ -35,7 +42,6 @@ us_state_total <- us_states %>% group_by(state,date) %>%
 
 ```
 ```{r,echo=FALSE}
-us_counties <- data.table::fread("../NYT_covid-19-data/us-counties.csv")
 us_counties$date <- as.Date(us_counties$date)
 us_county_summary <- us_counties %>% group_by(state,county,date) %>% summarise(Cases=sum(cases),Deaths = sum(deaths),DeathRate = Deaths/Cases)
 
@@ -85,79 +91,40 @@ COUNTYDAILY$date <- as.character(COUNTYDAILY$date)
 dbWriteTable(db, "COUNTYDAILY",COUNTYDAILY,overwrite=TRUE)
 ```
 
-###  US Totals for Cases,Deaths  by Date
+###  Ohio Totals for Cases,Deaths  by Date
 
 
-```{r}
+```{r,echo=FALSE}
 STATESDAILY %>% filter(new_cases >0) %>% ggplot() + 
   geom_col(aes(x=date,y=new_cases)) +
-      labs(title="US Total Daily Cases by Date") +
+      labs(title="Ohio Cases by Date") +
      theme(axis.text.x = element_text(angle = 45)) 
     
 STATESDAILY %>% filter(new_deaths >0)%>% ggplot() + geom_col(aes(x=date,y=new_deaths)) +
-      labs(title="US Total Daily Deaths by Date") +
+      labs(title="OhioDeaths by Date") +
    theme(axis.text.x = element_text(angle = 45))
 
 STATESDAILY %>% filter(new_cases >0) %>% ggplot() + geom_col(aes(x=date,y=death_rate)) +
-      labs(title="US Death Rate by Date") +
+      labs(title="Ohio Death Rate by Date") +
    theme(axis.text.x = element_text(angle = 45))
 
 ```
 
-### Accumulated Daily Totals for Cases,Deaths  by Date
+### Ohio Accumulated  Totals for Cases,Deaths  by Date and County
 
 ```{r,echo=FALSE}
-us_total %>% plot_ly() %>% add_bars(x=~date,y=~Cases) %>%
-  layout(title="US Accumulated Daily Cases")
-
-us_total %>% plot_ly() %>% add_bars(x=~date,y=~Deaths) %>%
-  layout(title="US Accumulated Daily Deaths")
-
-us_total %>% plot_ly() %>% add_bars(x=~date,y=~DeathRate) %>%
-  layout(title="US Daily Rate of Death")
-```
-
-### Accumulated  Cases and Deaths by State and Date
-
-```{r,echo=FALSE}
-
-
-ggplot(us_state_total) + geom_col(aes(x=date,y=Cases,fill=state)) +
-  labs(title="Daily Accumulated Cases by Date") +
+plot1 <-ggplot(us_county_summary) + geom_col(aes(x=date,y=Cases,fill=county)) +
+  labs(title="Ohio Daily Accumulated Cases by Date") +
   theme(axis.text.x = element_text(angle = 45)) +
   scale_y_continuous(labels = scales::comma) +
    theme_gray()
+ggplotly(plot1)
 
-ggplot(us_state_total) + geom_col(aes(x=date,y=Deaths,fill=state)) +
+plot2 <- ggplot(us_county_summary) + geom_col(aes(x=date,y=Deaths,fill=county)) +
     theme(axis.text.x = element_text(angle = 90)) +
-  labs(title="Daily Accumulated Deaths by State") +
+  labs(title="Ohio Daily Accumulated Deaths by State") +
   scale_y_continuous(labels = scales::comma) + theme_gray()
-
-
-```
-
-### Accumulated Daily  Deaths and Cases Totals for   Ohio
-
-```{r,echo=FALSE}
-
-ohio_counties <- us_county_summary %>% filter(state=="Ohio")
-ggplot(ohio_counties) + geom_col(aes(x=date,y=Cases)) +
-  theme(axis.text.x = element_text(angle = 90)) +
-  labs(title="Ohio Daily Accumulated Cases by Date") + theme_gray()
-
-
-ggplot(ohio_counties) + geom_col(aes(x=date,y=Deaths)) +
-  labs(title="OhioAccumulated Deaths by Date") +
-  theme(axis.text.x = element_text(angle = 90)) + theme_gray()
+ggplotly(plot2)
 
 ```
-```{r,echo=FALSE}
-ggplot(ohio_counties) + geom_col(aes(x=date,y=Cases,fill=county)) +
-  labs(title="Ohio/county Accumulated Cases by Date") +
-  theme(axis.text.x = element_text(angle = 90)) + theme_gray()
 
-ggplot(ohio_counties) + geom_col(aes(x=date,y=Deaths,fill=county)) +
-  labs(title="Ohio/County Accumulated Deaths by Date") +
-  theme(axis.text.x = element_text(angle = 90)) + theme_gray()
-
-```
