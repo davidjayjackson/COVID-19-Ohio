@@ -95,19 +95,21 @@ dbWriteTable(db, "COUNTYDAILY",COUNTYDAILY,overwrite=TRUE)
 
 
 ```{r,echo=FALSE}
-STATESDAILY %>% filter(new_cases >0) %>% ggplot() + 
+gg1 <- STATESDAILY %>% filter(new_cases >0) %>% ggplot() + 
   geom_col(aes(x=date,y=new_cases)) +
       labs(title="Ohio Cases by Date") +
      theme(axis.text.x = element_text(angle = 45)) 
     
-STATESDAILY %>% filter(new_deaths >0)%>% ggplot() + geom_col(aes(x=date,y=new_deaths)) +
+gg2 <- STATESDAILY %>% filter(new_deaths >0)%>% ggplot() + geom_col(aes(x=date,y=new_deaths)) +
       labs(title="OhioDeaths by Date") +
    theme(axis.text.x = element_text(angle = 45))
 
-STATESDAILY %>% filter(new_cases >0) %>% ggplot() + geom_col(aes(x=date,y=death_rate)) +
+gg3 <- STATESDAILY %>% filter(new_cases >0) %>% ggplot() + geom_col(aes(x=date,y=death_rate)) +
       labs(title="Ohio Death Rate by Date") +
    theme(axis.text.x = element_text(angle = 45))
-
+ggplotly(gg1)
+ggplotly(gg2)
+ggplotly(gg3)
 ```
 
 ### Ohio Accumulated  Totals for Cases,Deaths  by Date and County
