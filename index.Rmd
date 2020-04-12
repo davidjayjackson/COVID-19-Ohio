@@ -1,7 +1,7 @@
 ---
 title:  "Analysis of COVID-19 Data for the  State Of Ohio"
 author: "David J Jackson"
-date: "Apr. 11, 2010 11:55AM EDT"
+date: "Apr. 12, 2010 05:00PM EDT"
 output: html_document
 ---
 
@@ -24,7 +24,7 @@ library(plotly)
 
 ```{r, echo=FALSE}
 rm(list=ls())
-db <- dbConnect(SQLite(), dbname="../db/CORVID.sqlite3")
+db <- dbConnect(SQLite(), dbname="../COVIDDB/CORVID.sqlite3")
 
 us_states <- dbGetQuery(db, "SELECT state,date,cases,deaths FROM us_states
                         WHERE state='Ohio';")
@@ -65,7 +65,7 @@ STATESDAILY <- STATESDAILY %>% mutate(new_cases = TotalCases - PreviousTotalCase
 STATESDAILY <- STATESDAILY %>% mutate(new_deaths = TotalDeaths - PreviousTotalDeaths)
 STATESDAILY <- STATESDAILY %>% mutate(death_rate = new_deaths / new_cases)
 STATESDAILY$date <- as.character(STATESDAILY$date)
-db <- dbConnect(SQLite(), dbname="../db/CORVID.sqlite3")
+db <- dbConnect(SQLite(), dbname="../COVIDDB//CORVID.sqlite3")
 dbWriteTable(db, "STATESDAILY",STATESDAILY ,overwrite=TRUE)
 ```
 
