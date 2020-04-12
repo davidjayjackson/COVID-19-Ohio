@@ -1,13 +1,13 @@
 ---
 title:  "Analysis of COVID-19 Data for the  State Of Ohio"
 author: "David J Jackson"
-date: "Apr. 12, 2010 05:00PM EDT"
+date: "Apr. 12, 2010 06:00PM EDT"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_chunk$set(fig.width=9, fig.height=6)
+# knitr::opts_chunk$set(fig.width=9, fig.height=6)
 library(tidyverse)
 library(RSQLite)
 library(plotly)
