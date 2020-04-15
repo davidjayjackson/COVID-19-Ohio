@@ -1,7 +1,7 @@
 ---
 title:  "Analysis of COVID-19 Data for the  State Of Ohio"
 author: "David J Jackson"
-date: "Apr. 14, 2010 01:05PM EDT"
+date: "Apr. 15, 2010 11:15AM EDT"
 output: html_document
 ---
 
@@ -101,7 +101,7 @@ gg1 <- STATESDAILY %>% filter(new_cases >0) %>% ggplot() +
      theme(axis.text.x = element_text(angle = 45)) 
     
 gg2 <- STATESDAILY %>% filter(new_deaths >0)%>% ggplot() + geom_col(aes(x=date,y=new_deaths)) +
-      labs(title="OhioDeaths by Date") +
+      labs(title="Ohio Deaths by Date") +
    theme(axis.text.x = element_text(angle = 45))
 
 gg3 <- STATESDAILY %>% filter(new_cases >0) %>% ggplot() + geom_col(aes(x=date,y=death_rate)) +
