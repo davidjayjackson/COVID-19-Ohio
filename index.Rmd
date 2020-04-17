@@ -1,7 +1,7 @@
 ---
 title:  "Analysis of COVID-19 Data for the  State Of Ohio"
 author: "David J Jackson"
-date: "Apr. 16, 2010 08:25 PM / EDT"
+date: "Apr. 17, 2010 02:15 PM / EDT"
 output: html_document
 ---
 
@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(RSQLite)
 library(plotly)
+theme_set(theme_light())
 ```
 
 #### Disclaimer:
@@ -99,7 +100,10 @@ gg1 <- STATESDAILY %>% filter(date >= Sys.Date() -30) %>% ggplot() +
   geom_col(aes(x=date,y=new_cases,fill=new_cases)) +
       labs(title="Ohio Cases by Date") +
      theme(axis.text.x = element_text(angle = 45)) 
-    
+#
+#  geom_rect(data=STATESDAILY,aes(xmin=max(date) -10,xmax=max(date) -15,ymin=min(new_cases),ymax=max(new_cases)), alpha= 0.01,fill="grey")
+```
+```{r, echo=FALSE}
 gg2 <- STATESDAILY %>% filter(date >= Sys.Date()-30 )%>% ggplot() + geom_col(aes(x=date,y=new_deaths,fill=new_deaths)) +
       labs(title="Ohio Deaths by Date") +
    theme(axis.text.x = element_text(angle = 45))
