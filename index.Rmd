@@ -1,7 +1,7 @@
 ---
 title:  "Analysis of COVID-19 Data for the  State Of Ohio"
 author: "David J Jackson"
-date: "Apr. 15, 2010 1:45PM EDT"
+date: "Apr. 16, 2010 08:25 PM / EDT"
 output: html_document
 ---
 
@@ -91,21 +91,22 @@ COUNTYDAILY$date <- as.character(COUNTYDAILY$date)
 dbWriteTable(db, "COUNTYDAILY",COUNTYDAILY,overwrite=TRUE)
 ```
 
-###  Ohio Totals for Cases,Deaths  by Date
+###  Ohio Totals for Cases,Deaths  by Date (Previous 30 Days)
 
 
 ```{r,echo=FALSE}
-gg1 <- STATESDAILY %>% filter(new_cases >0) %>% ggplot() + 
-  geom_col(aes(x=date,y=new_cases)) +
+gg1 <- STATESDAILY %>% filter(date >= Sys.Date() -30) %>% ggplot() + 
+  geom_col(aes(x=date,y=new_cases,fill=new_cases)) +
       labs(title="Ohio Cases by Date") +
      theme(axis.text.x = element_text(angle = 45)) 
     
-gg2 <- STATESDAILY %>% filter(new_deaths >0)%>% ggplot() + geom_col(aes(x=date,y=new_deaths)) +
+gg2 <- STATESDAILY %>% filter(date >= Sys.Date()-30 )%>% ggplot() + geom_col(aes(x=date,y=new_deaths,fill=new_deaths)) +
       labs(title="Ohio Deaths by Date") +
    theme(axis.text.x = element_text(angle = 45))
 
-gg3 <- STATESDAILY %>% filter(new_cases >0) %>% ggplot() + geom_col(aes(x=date,y=death_rate)) +
-      labs(title="Ohio Death Rate by Date") +
+gg3 <- STATESDAILY %>% filter(date >= Sys.Date() - 30) %>% ggplot() + geom_col(aes(x=date,y=death_rate,fill=death_rate)) +
+      labs(title="Ohio Death Rate by Date") + 
+  scale_y_continuous(labels = scales::percent) +
    theme(axis.text.x = element_text(angle = 45))
 ggplotly(gg1)
 ggplotly(gg2)
