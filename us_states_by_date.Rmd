@@ -1,0 +1,35 @@
+---
+title: "COVID-19 US States by Date"
+author: "David J Jackson"
+date: "4/15/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(RSQLite)
+library(plotly)
+knitr::opts_chunk$set(fig.width=9, fig.height=7)
+```
+```{r, echo=FALSE}
+rm(list=ls())
+db <- dbConnect(SQLite(), dbname="../COVIDDB/CORVID.sqlite3")
+
+states <- dbGetQuery(db, "SELECT state,date,cases,deaths FROM us_states ;")
+states$date <- as.Date(states$date)
+# counties_daily <- dbGetQuery(db, "SELECT state,county,date,cases,deaths # FROM us_counties;")
+```
+```{r}
+states %>% filter(date >="2020-01-01") %>%
+ggplot() + geom_col(aes(x=cases,y=state)) + 
+  labs(title="US States Reporting Cases",
+       subtitle="During 30 Day Period ending Feb. 22,2020") +
+        scale_x_continuous(labels = scales::comma)
+```
+
+```{r}
+states %>% filter(date >="2020-01-01" & cases >0) %>% group_by(state) %>%
+  summarise(Count = n()) %>% View()
+```
+
