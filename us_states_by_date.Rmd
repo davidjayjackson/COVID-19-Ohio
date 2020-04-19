@@ -17,25 +17,30 @@ knitr::opts_chunk$set(fig.width=9, fig.height=7)
 rm(list=ls())
 db <- dbConnect(SQLite(), dbname="../COVIDDB/CORVID.sqlite3")
 
-states <- dbGetQuery(db, "SELECT state,date,cases,deaths FROM us_states ;")
-states$date <- as.Date(states$date)
+usstates <- dbGetQuery(db, "SELECT state,date,cases,deaths FROM us_states ;")
+usstates$date <- as.Date(usstates$date)
 
-states <- states %>% filter(state !="American Samoa" &
+states <- usstates %>% filter(state !="American Samoa" &
                        state !="Northern Mariana Islands" &
                       state != "Virgin Islands"  &
                       state != "Puerto Rico" &
                       state != "Guam")
-
+# Per Joe Harmon on Slack
+# states <- usstates %>% !states %in% c("American Samoa", "Northern Mariana Islands",
+#                        "Virgin Islands","Puerto Rico","Guam")
 ```
 ```{r, echo=FALSE}
+# 7 Days
+sts <- states %>% filter(date <="2020-01-28" & cases >0 | deaths >0) %>% group_by(state) %>%
+      summarise(Cases = sum(cases),Deaths = sum(deaths))
 # 14 Days
-sts <- states %>% filter(date <="2020-02-05" & cases >0 | deaths >0) %>% group_by(state) %>%
+sts1 <- states %>% filter(date <="2020-02-05" & cases >0 | deaths >0) %>% group_by(state) %>%
       summarise(Cases = sum(cases),Deaths = sum(deaths))
 # 30 Days
-sts1 <- states %>% filter(date <="2020-02-21" & cases >0 | deaths >0) %>% group_by(state) %>%
+sts2 <- states %>% filter(date <="2020-02-21" & cases >0 | deaths >0) %>% group_by(state) %>%
       summarise(Cases = sum(cases),Deaths = sum(deaths))
 # 60 Days
-sts2 <- states %>% filter(date <="2020-03-22" & cases >0| deaths >0) %>% group_by(state) %>%
+sts3 <- states %>% filter(date <="2020-03-22" & cases >0| deaths >0) %>% group_by(state) %>%
       summarise(Cases = sum(cases),Deaths = sum(deaths))
 ```
 
@@ -76,3 +81,9 @@ ggplot(sts2) + geom_col(aes(x=Deaths,y=reorder(state,Deaths))) +
   labs(title="US States Reporting  Deaths",
        subtitle="(During 1st 60 Days: Jan. 22, 2020 -  Mar. 22. 21,2020)") 
 ```
+```{r}
+states_lead <-states %>% mutate(Vote = ifelse(deaths ==0,0,1)) 
+     
+
+```
+
