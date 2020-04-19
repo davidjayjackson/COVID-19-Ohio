@@ -49,16 +49,23 @@ sts3 <- states %>% filter(date <="2020-03-22" & cases >0| deaths >0) %>% group_b
 ```{r, echo=FALSE}
 ggplot(sts) + geom_col(aes(x=Cases,y=reorder(state,Cases))) + 
   labs(title="US States Reporting Cases",
+       subtitle="(During 1st 7 Days: Jan. 22, 2020 -  Jam. 28 ,2020)") 
+         
+```
+
+```{r, echo=FALSE}
+ggplot(sts1) + geom_col(aes(x=Cases,y=reorder(state,Cases))) + 
+  labs(title="US States Reporting Cases",
        subtitle="(During 1st 14 Days: Jan. 22, 2020 -  Feb. 05,2020)") 
          
 ```
 ```{r, echo=FALSE}
-ggplot(sts1) + geom_col(aes(x=Cases,y=reorder(state,Cases))) + 
+ggplot(sts2) + geom_col(aes(x=Cases,y=reorder(state,Cases))) + 
   labs(title="US States Reporting Cases",
        subtitle="(During 30  Days: Jan. 22, 2020 -  Feb. 21,2020)")
 ```
 ```{r,echo=FALSE}
-ggplot(sts2) + geom_col(aes(x=Cases,y=reorder(state,Cases))) + 
+ggplot(sts3) + geom_col(aes(x=Cases,y=reorder(state,Cases))) + 
   labs(title="US States Reporting  Cases",
        subtitle="(During 1st 60 Days: Jan. 22, 2020 -  Mar. 22. 21,2020)") 
 ```
@@ -68,22 +75,24 @@ ggplot(sts2) + geom_col(aes(x=Cases,y=reorder(state,Cases))) +
 ```{r, echo=FALSE}
 ggplot(sts) + geom_col(aes(x=Deaths,y=reorder(state,Deaths))) + 
   labs(title="US States Reporting Deaths",
-       subtitle="(During 1st 14 Days: Jan. 22, 2020 -  Feb. 05,2020)") 
+       subtitle="(During 1st 7 Days: Jan. 22, 2020 -  Jam. 28,2020)") 
          
 ```
 ```{r, echo=FALSE}
 ggplot(sts1) + geom_col(aes(x=Deaths,y=reorder(state,Deaths))) + 
   labs(title="US States Reporting Deaths",
-       subtitle="(During 30  Days: Jan. 22, 2020 -  Feb. 21,2020)")
+       subtitle="(During 1st 14 Days: Jan. 22, 2020 -  Feb. 05,2020)") 
+         
 ```
 ```{r, echo=FALSE}
 ggplot(sts2) + geom_col(aes(x=Deaths,y=reorder(state,Deaths))) + 
+  labs(title="US States Reporting Deaths",
+       subtitle="(During 30  Days: Jan. 22, 2020 -  Feb. 21,2020)")
+```
+```{r, echo=FALSE}
+ggplot(sts3) + geom_col(aes(x=Deaths,y=reorder(state,Deaths))) + 
   labs(title="US States Reporting  Deaths",
        subtitle="(During 1st 60 Days: Jan. 22, 2020 -  Mar. 22. 21,2020)") 
 ```
-```{r}
-states_lead <-states %>% mutate(Vote = ifelse(deaths ==0,0,1)) 
-     
 
-```
 
