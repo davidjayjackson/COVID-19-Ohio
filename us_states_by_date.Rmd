@@ -1,5 +1,6 @@
 ---
-title: "COVID-19 US States by Date"
+title: "COVID-19: US States(and D.C.) Cases/Deaths"
+subtitle: "First 14/30/60 Days"
 author: "David J Jackson"
 date: "4/15/2020"
 output: html_document
@@ -19,38 +20,39 @@ db <- dbConnect(SQLite(), dbname="../COVIDDB/CORVID.sqlite3")
 states <- dbGetQuery(db, "SELECT state,date,cases,deaths FROM us_states ;")
 states$date <- as.Date(states$date)
 
+states <- states %>% filter(state !="American Samoa" &
+                       state !="Northern Mariana Islands" &
+                      state != "Virgin Islands"  &
+                      state != "Puerto Rico" &
+                      state != "Guam")
+
 ```
-```{r}
+```{r, echo=FALSE}
 # 14 Days
 sts <- states %>% filter(date <="2020-02-05" & cases >0 | deaths >0) %>% group_by(state) %>%
       summarise(Cases = sum(cases),Deaths = sum(deaths))
 # 30 Days
-sts1 <- states %>% filter(date <="2020-02-21" & cases >0 | death >0) %>% group_by(state) %>%
+sts1 <- states %>% filter(date <="2020-02-21" & cases >0 | deaths >0) %>% group_by(state) %>%
       summarise(Cases = sum(cases),Deaths = sum(deaths))
 # 60 Days
 sts2 <- states %>% filter(date <="2020-03-22" & cases >0| deaths >0) %>% group_by(state) %>%
       summarise(Cases = sum(cases),Deaths = sum(deaths))
-
-# sts1 <- sts %>% filter(state !="American Samoa" &
-#                       state !="Northern Mariana Islands" &
-#                       state != "Virgin Islands"  &
-#                       state != "Puerto Rico")
 ```
 
 #### US States Reporting Cases for the First 14/20/60 Days
 
-```{r}
+```{r, echo=FALSE}
 ggplot(sts) + geom_col(aes(x=Cases,y=reorder(state,Cases))) + 
   labs(title="US States Reporting Cases",
        subtitle="(During 1st 14 Days: Jan. 22, 2020 -  Feb. 05,2020)") 
          
 ```
-```{r}
+```{r, echo=FALSE}
 ggplot(sts1) + geom_col(aes(x=Cases,y=reorder(state,Cases))) + 
   labs(title="US States Reporting Cases",
        subtitle="(During 30  Days: Jan. 22, 2020 -  Feb. 21,2020)")
 ```
-```{r}
+```{r,echo=FALSE}
 ggplot(sts2) + geom_col(aes(x=Cases,y=reorder(state,Cases))) + 
   labs(title="US States Reporting  Cases",
        subtitle="(During 1st 60 Days: Jan. 22, 2020 -  Mar. 22. 21,2020)") 
@@ -58,18 +60,18 @@ ggplot(sts2) + geom_col(aes(x=Cases,y=reorder(state,Cases))) +
 
 #### US States Reporting Deaths for the First 14/30/60 Days
 
-```{r}
+```{r, echo=FALSE}
 ggplot(sts) + geom_col(aes(x=Deaths,y=reorder(state,Deaths))) + 
   labs(title="US States Reporting Deaths",
        subtitle="(During 1st 14 Days: Jan. 22, 2020 -  Feb. 05,2020)") 
          
 ```
-```{r}
+```{r, echo=FALSE}
 ggplot(sts1) + geom_col(aes(x=Deaths,y=reorder(state,Deaths))) + 
   labs(title="US States Reporting Deaths",
        subtitle="(During 30  Days: Jan. 22, 2020 -  Feb. 21,2020)")
 ```
-```{r}
+```{r, echo=FALSE}
 ggplot(sts2) + geom_col(aes(x=Deaths,y=reorder(state,Deaths))) + 
   labs(title="US States Reporting  Deaths",
        subtitle="(During 1st 60 Days: Jan. 22, 2020 -  Mar. 22. 21,2020)") 
