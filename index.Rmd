@@ -1,7 +1,7 @@
 ---
 title:  "Analysis of COVID-19 Data for the  State Of Ohio"
 author: "David J Jackson"
-date: "Apr. 19, 2020 3:00 PM / EDT"
+date: "Apr. 20, 2020 5:45 PM / EDT"
 output: html_document
 ---
 
@@ -27,17 +27,22 @@ theme_set(theme_light())
 rm(list=ls())
 db <- dbConnect(SQLite(), dbname="../COVIDDB/CORVID.sqlite3")
 
-us_states <- dbGetQuery(db, "SELECT state,date,cases,deaths FROM us_states
-                        WHERE state='Ohio';")
-us_counties <- dbGetQuery(db, "SELECT state,county,date,cases,deaths FROM us_counties
-                          WHERE state='Ohio';")
+us_states <- dbGetQuery(db, "SELECT state,date,cases,deaths FROM us_states;")
+us_counties <- dbGetQuery(db, "SELECT state,county,date,cases,deaths FROM us_counties;")
+
+us_states$date <-as.Date(us_states$date)
+us_counties$date <- as.Date(us_counties$date)
+
+oh_state <- us_states %>% filter(state=="Ohio")  
+oh_counties <- us_counties %>% filter(state=="Ohio")
+
 ```
 ```{r,echo=FALSE}
-  us_states$date <-as.Date(us_states$date)
-us_total <- us_states %>% group_by(date) %>% 
+  
+us_total <- oh_state %>% group_by(date) %>% 
 summarise(Cases=sum(cases), Deaths = sum(deaths),  DeathRate = Deaths/Cases)
 
-us_state_total <- us_states %>% group_by(state,date) %>% 
+us_state_total <- oh_state %>% group_by(state,date) %>% 
   summarise(Cases=sum(cases),   Deaths = sum(deaths),                               
    DeathRate = Deaths/Cases)
 
@@ -47,55 +52,16 @@ us_counties$date <- as.Date(us_counties$date)
 us_county_summary <- us_counties %>% group_by(state,county,date) %>% summarise(Cases=sum(cases),Deaths = sum(deaths),DeathRate = Deaths/Cases)
 
 ```
-```{r,echo=FALSE}
-STATESDAILY <-  us_states %>% 
-  group_by(date, state) %>%
-  summarise(
-    TotalCases = sum(cases, na.rm=TRUE),
-    TotalDeaths = sum(deaths, na.rm=TRUE)
-  ) %>%
-  group_by(state) %>%
-  arrange(desc(date)) %>%
-  mutate(
-    PreviousTotalCases = lead(TotalCases),
-    PreviousTotalDeaths = lead(TotalDeaths)
-  ) %>%
-  ungroup() %>%
-  na.omit()
-STATESDAILY <- STATESDAILY %>% mutate(new_cases = TotalCases - PreviousTotalCases)
-STATESDAILY <- STATESDAILY %>% mutate(new_deaths = TotalDeaths - PreviousTotalDeaths)
-STATESDAILY <- STATESDAILY %>% mutate(death_rate = new_deaths / new_cases)
-STATESDAILY$date <- as.character(STATESDAILY$date)
-db <- dbConnect(SQLite(), dbname="../COVIDDB//CORVID.sqlite3")
-dbWriteTable(db, "STATESDAILY",STATESDAILY ,overwrite=TRUE)
-```
 
-```{r,echo=FALSE}
-COUNTYDAILY <-  us_counties %>% 
-  group_by(date,state, county) %>%
-  summarise(
-    TotalCases = sum(cases, na.rm=TRUE),
-    TotalDeaths = sum(deaths, na.rm=TRUE)
-  ) %>%
-  group_by(state,county) %>%
-  arrange(desc(date)) %>%
-  mutate(
-    PreviousTotalCases = lead(TotalCases),
-    PreviousTotalDeaths = lead(TotalDeaths)
-  ) %>%
-  ungroup() %>%
-  na.omit()
-COUNTYDAILY <- COUNTYDAILY%>% mutate(new_cases = TotalCases - PreviousTotalCases)
-COUNTYDAILY <- COUNTYDAILY%>% mutate(new_deaths = TotalDeaths - PreviousTotalDeaths)
-COUNTYDAILY <- COUNTYDAILY%>% mutate(death_rate = new_deaths/new_cases)
-COUNTYDAILY$date <- as.character(COUNTYDAILY$date)
-dbWriteTable(db, "COUNTYDAILY",COUNTYDAILY,overwrite=TRUE)
-```
 
 ###  Ohio Totals for Cases,Deaths  by Date (Previous 30 Days)
 
+  ```{r}
+STATESDAILY <- dbGetQuery(db, " SELECT * FROM STATESDAILY;") 
 
-```{r,echo=FALSE}
+COUNTYDAILY <- dbGetQuery(db, "SELECT * FROM COUNTYDAILY;")
+```
+```{r}
 gg1 <- STATESDAILY %>% filter(date >= Sys.Date() -30) %>% ggplot() + 
   geom_col(aes(x=date,y=new_cases,fill=new_cases)) +
       labs(title="Ohio Cases by Date") +
