@@ -25,6 +25,11 @@ states <- usstates %>% filter(state !="American Samoa" &
                       state != "Virgin Islands"  &
                       state != "Puerto Rico" &
                       state != "Guam")
+## Get States daily numbers
+states_daily <- dbGetQuery(db, "SELECT * FROM STATESDAILY ;")
+states_daily$date <- as.Date(states_daily$date)
+
+
 # Per Joe Harmon on Slack
 # states <- usstates %>% !states %in% c("American Samoa", "Northern Mariana Islands",
 #                        "Virgin Islands","Puerto Rico","Guam")
@@ -94,5 +99,49 @@ ggplot(sts3) + geom_col(aes(x=Deaths,y=reorder(state,Deaths))) +
   labs(title="US States Reporting  Deaths",
        subtitle="(During 1st 60 Days: Jan. 22, 2020 -  Mar. 22. 21,2020)") 
 ```
+```{r}
+usstates <- states %>% mutate(Days = date - as.Date("2020-01-21")) %>%
+  group_by(state,date) %>% summarize(
+                      first_case = dplyr::first(date)) 
+                     # first_death = dplyr::first(deaths))
+```
+```{r}
+usstates <- states %>% mutate(Days = date - as.Date("2020-01-21")) %>%
+                  arrange(date) %>%
+                  group_by(state) %>%
+                  slice(1:1)
 
+```
+```{r}
+scott <- states %>% mutate(Days = date - as.Date("2020-01-21")) %>%
+  arrange(state,date) %>% filter(cases >0) %>%
+  group_by(state) %>% filter(row_number()==1)
 
+scott2 <- states %>% mutate(Days = date - as.Date("2019-12-31")) %>%
+  arrange(state,date) %>% filter(deaths >0) %>%
+  group_by(state) %>% filter(row_number()==1)
+                      
+```
+
+```{r}
+scott  %>%
+  ggplot(aes(x=Days,y=state,fill=cases)) +
+  geom_tile() + labs(title="First Confirmed Cases by States",
+                      x="Days from Jan. 22, 2020",
+                      y="US States")
+
+scott  %>%
+  ggplot(aes(x=date,y=state,fill=cases)) +
+  geom_tile() + labs(title="First Confirmed Cases by States",
+                      x="Date of first Cases",
+                      y="US States")
+```
+
+```{r}
+scott2  %>%
+  ggplot(aes(x=Days,y=state,fill=cases)) +
+  geom_tile() + labs(title="First Reported Cases by States",
+                     subtitle="Beginng with first cases in China",
+                      x="Days from Dec.  31, 2019",
+                      y="US States")
+```
