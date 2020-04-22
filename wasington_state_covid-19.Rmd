@@ -1,0 +1,64 @@
+---
+title: "Washington State COVID-19"
+author: "David J Jackson"
+date: "4/22/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(RSQLite)
+library(ggeasy)
+library(plotly)
+```
+```{r}
+db <- dbConnect(SQLite(), dbname="../COVIDDB/CORVID.sqlite3")
+us_states <- dbGetQuery(db, "SELECT state,date,cases,deaths FROM us_states;")
+us_states$date <-as.Date(us_states$date)
+```
+
+### Washington State: First Case Jan. 21, 2020.
+
+```{r}
+wa_state <- us_states %>% filter(state=="Washington")
+WA <- wa_state %>% group_by(date) %>% 
+summarise(Cases=sum(cases), Deaths = sum(deaths))   %>%
+   mutate(daily_deaths = Deaths - lag(Deaths)) %>% 
+   mutate(daily_cases = Cases -  lag(Cases)) %>%
+   mutate(DeathRate = daily_deaths/daily_cases)
+```
+```{r}
+WA %>% ggplot() + geom_line(aes(x=date,y=daily_cases,col="Cases by Day"),lwd=1) + 
+  labs(title="Washington State: Total  Cases by Date",x="Date",y="Daily Cases") + 
+  geom_vline(xintercept = as.Date("2020-03-23"),lwd=1 ) +
+  geom_text(aes(x=as.Date("2020-03-21"), label="Shutdown Order", y=800,angle=90))
+
+```  
+```{r}
+
+wa_state %>% ggplot() + geom_line(aes(x=date,y=cases,col="Cases by Day"),lwd=1) + 
+  labs(title="Washington State: Accumulated Cases by Date",x="Date",y="Daily Cases") + 
+  geom_vline(xintercept = as.Date("2020-03-23"),lwd=1 ) +
+  geom_text(aes(x=as.Date("2020-03-21"), label="Shutdown Order", y=8000,angle=90))
+  
+```
+
+### Washington State: First Case Feb. 29, 2020.
+
+```{r}
+WA %>% ggplot() + geom_line(aes(x=date,y=daily_deaths,col="Cases by Day"),lwd=1) + 
+  labs(title="Washington State: Total  Deaths by Date",x="Date",y="Daily Cases") + 
+  geom_vline(xintercept = as.Date("2020-03-23"),lwd=1 ) +
+  geom_text(aes(x=as.Date("2020-03-21"), label="Shutdown Order", y=50,angle=90))
+
+```  
+```{r}
+
+WA %>% ggplot() + geom_line(aes(x=date,y=Deaths,col="Deaths"),lwd=1) + 
+  labs(title="Washington State: Accumulated Deaths by Date",x="Date",y="Daily Cases") + 
+  geom_vline(xintercept = as.Date("2020-03-23"),lwd=1 ) +
+  geom_text(aes(x=as.Date("2020-03-21"), label="Shutdown Order", y=500,angle=90))
+  
+```
+
