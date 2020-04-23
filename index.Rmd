@@ -1,7 +1,7 @@
 ---
 title:  "Analysis of COVID-19 Data for the  State Of Ohio"
 author: "David J Jackson"
-date: "Apr. 22, 2020 1:45 PM / EDT"
+date: "Apr. 23, 2020 6:45 PM / EDT"
 output: html_document
 ---
 
@@ -37,6 +37,7 @@ oh_state <- us_states %>% filter(state=="Ohio")
 oh_counties <- us_counties %>% filter(state=="Ohio")
 
 ```
+
 ```{r,echo=FALSE}
   
 buckeye <- oh_state %>% group_by(date) %>% 
