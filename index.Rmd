@@ -84,14 +84,14 @@ ggplotly(gg3)
 ### Ohio Accumulated  Totals for Cases, Deaths  by Date and County
 
 ```{r,echo=FALSE}
-plot1 <-ggplot(oh_counties) + geom_col(aes(x=date,y=cases,fill=county)) +
+plot1 <-ggplot(oh_counties) + geom_line(aes(x=date,y=cases,col=county)) +
   labs(title="Ohio Daily Accumulated Cases by Date") +
   theme(axis.text.x = element_text(angle = 45)) +
   scale_y_continuous(labels = scales::comma) +
    theme_gray()
 ggplotly(plot1)
 
-plot2 <- ggplot(oh_counties) + geom_col(aes(x=date,y=deaths,fill=county)) +
+plot2 <- ggplot(oh_counties) + geom_line(aes(x=date,y=deaths,col=county)) +
     theme(axis.text.x = element_text(angle = 90)) +
   labs(title="Ohio Daily Accumulated Deaths by State") +
   scale_y_continuous(labels = scales::comma) + theme_gray()
