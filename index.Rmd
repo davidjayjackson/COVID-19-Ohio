@@ -1,7 +1,7 @@
 ---
 title:  "Analysis of COVID-19 Data for the  State Of Ohio"
 author: "David J Jackson"
-date: "Apr. 29, 2020 12:40 PM / EDT"
+date: "Apr. 30, 2020 3:45 PM / EDT"
 output: html_document
 ---
 
@@ -85,7 +85,7 @@ ggplotly(gg3)
 
 ```{r,echo=FALSE}
 plot1 <-ggplot(oh_counties) + geom_line(aes(x=date,y=cases,col=county)) +
-  labs(title="Ohio Daily Accumulated Cases by Date") +
+  labs(title="Ohio Counties Daily Accumulated Cases by Date") +
   theme(axis.text.x = element_text(angle = 45)) +
   scale_y_continuous(labels = scales::comma) +
    theme_gray()
@@ -93,7 +93,7 @@ ggplotly(plot1)
 
 plot2 <- ggplot(oh_counties) + geom_line(aes(x=date,y=deaths,col=county)) +
     theme(axis.text.x = element_text(angle = 90)) +
-  labs(title="Ohio Daily Accumulated Deaths by State") +
+  labs(title="Ohio Counties Daily Accumulated Deaths by Date") +
   scale_y_continuous(labels = scales::comma) + theme_gray()
 ggplotly(plot2)
 
