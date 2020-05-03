@@ -1,7 +1,7 @@
 ---
 title:  "Analysis of COVID-19 Data for the  State Of Ohio"
 author: "David J Jackson"
-date: "May 2, 2020 2:45 PM / EDT"
+date: "May 3, 2020 3:20 PM / EDT"
 output: html_document
 ---
 
@@ -98,4 +98,6 @@ plot2 <- ggplot(oh_counties) + geom_line(aes(x=date,y=deaths,col=county)) +
 ggplotly(plot2)
 
 ```
+
+
 
