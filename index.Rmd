@@ -1,7 +1,7 @@
 ---
 title:  "Analysis of COVID-19 Data for the  State Of Ohio"
 author: "David J Jackson"
-date: "May 7, 2020 2:50 PM / EDT"
+date: "May 8, 2020 4:45 PM / EDT"
 output: html_document
 ---
 
@@ -60,17 +60,17 @@ summarise(Cases=sum(cases), Deaths = sum(deaths))   %>%
 ```
 
 
-###  Ohio Totals for Cases, Deaths  by Date (Previous 30 Days)
+###  Ohio Totals for Cases, Deaths  by Date 
 
 ```{r}
-gg1 <- buckeye %>% filter(date >= Sys.Date() -30) %>% ggplot() + 
-  geom_col(aes(x=date,y=daily_cases)) +
-     labs(title="Ohio Cases by Date") 
+gg1 <- buckeye %>% ggplot() + 
+  geom_col(aes(x=date,y=daily_cases)) + 
+     labs(title="Ohio Cases by Date",y="Daily Cases (log10)") + scale_y_log10()
 ```
 ```{r, echo=FALSE}
-gg2 <- buckeye %>% filter(date >= Sys.Date()-30 )%>% ggplot() + geom_col(aes(x=date,y=daily_deaths)) +
-      labs(title="Ohio Deaths by Date") +
-   theme(axis.text.x = element_text(angle = 45))
+gg2 <- buckeye %>% ggplot() + geom_col(aes(x=date,y=daily_deaths)) +
+      labs(title="Ohio Deaths by Date",y="Daily Deaths(log10)") +
+   theme(axis.text.x = element_text(angle = 45)) + scale_y_log10()
 
 gg3 <- buckeye %>% filter(date >= Sys.Date() - 30) %>% ggplot() + geom_col(aes(x=date,y=DeathRate)) +
       labs(title="Ohio Death Rate by Date") + 
