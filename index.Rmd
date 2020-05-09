@@ -1,7 +1,7 @@
 ---
 title:  "Analysis of COVID-19 Data for the  State Of Ohio"
 author: "David J Jackson"
-date: "May 8, 2020 4:45 PM / EDT"
+date: "May 9, 2020 1:30 PM / EDT"
 output: html_document
 ---
 
@@ -102,13 +102,13 @@ ggplotly(plot2)
 buckeye %>% ggplot() +
   geom_col(aes(x=date,y=Cases)) + 
      labs(title="Ohio Accumulated Cases by Date",x="Date",y="Accumulated Cases(log10)") +
-     scale_y_log10(labels = scales::comma) + geom_smooth(aes(x=date,y=Cases),method="glm")
+     scale_y_log10(labels = scales::comma) + geom_smooth(aes(x=date,y=Cases))
 ```
 ```{r}
 buckeye %>% ggplot() +
   geom_col(aes(x=date,y=Deaths)) + 
      labs(title="Ohio Accumulated Deaths by Date",x="Date",y="Accumulated Cases(log10)") +
-     scale_y_log10(labels = scales::comma) + geom_smooth(aes(x=date,y=Deaths),method="glm")
+     scale_y_log10(labels = scales::comma) + geom_smooth(aes(x=date,y=Deaths))
 ```
 
 
