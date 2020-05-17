@@ -1,5 +1,5 @@
 ---
-title:  "Analysis of COVID-19 Data for the  State Of Ohio"
+title:  "Ohio's Battle wuth COVID-19 "
 author: "David J Jackson"
 date: "May 17, 2020 6:15 PM / EDT"
 output: html_document
