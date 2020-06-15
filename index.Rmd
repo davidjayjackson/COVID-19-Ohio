@@ -1,7 +1,7 @@
 ---
 title:  "Ohio's Battle with COVID-19 "
 author: "David J Jackson"
-date: "June  17 2020 17:15 UD/UT"
+date: "June  15 2020 20:20 UD/UT"
 output: html_document
 ---
 
