@@ -1,0 +1,54 @@
+---
+title: "Fun with Lags"
+author: "David J Jackson"
+date: "6/23/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(RSQLite)
+```
+```{r}
+rm(list=ls())
+db <- dbConnect(SQLite(), dbname="../COVIDDB/CORVID.sqlite3")
+
+us_states <- dbGetQuery(db, "SELECT state,date,new_cases,new_deaths FROM STATESDAILY;")
+```
+```{r}
+
+
+ST <- us_states%>% filter(date >="2020-06-22") 
+
+df <- ST %>% pivot_wider(
+    names_from=date,
+    values_from=starts_with('new_'))
+ 
+df$Cases <- df$`new_cases_2020-06-23` -df$`new_cases_2020-06-22`
+df <- df %>% filter( Cases >0)
+
+df$Deaths <- df$`new_deaths_2020-06-23` -df$`new_deaths_2020-06-22`
+df <- df %>% filter( Cases >0)
+```
+```{r}
+df %>% ggplot(aes(state,Cases)) +geom_col() +
+  coord_flip() + labs(title="States that had a increase in Cases",
+                      subtitle ="From  June 21,2020 - June 22, 2020")
+
+df %>% filter(D >0) %>% ggplot(aes(state,D)) +geom_col() +
+  coord_flip() + labs(title="States that had a increase in Deaths",
+                      subtitle ="From  June 21,2020 - June 22, 2020")
+```
+```{r}
+SC <-ST %>% 
+    dplyr::mutate(C = sign(new_cases - dplyr::lag(new_cases)) > 0) %>% 
+    dplyr::filter(date == lubridate::ymd("2020-06-22") & C == T) %>% 
+    .[["state"]] 
+  
+   ggplot(aes(state,C)) +geom_col() +
+  coord_flip() + labs(title="States that had a increase in Cases",
+                      subtitle ="From  June 22,2020 - June 23, 2020")
+  
+```
+
