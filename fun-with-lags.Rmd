@@ -29,26 +29,16 @@ df$Cases <- df$`new_cases_2020-06-23` -df$`new_cases_2020-06-22`
 df <- df %>% filter( Cases >0)
 
 df$Deaths <- df$`new_deaths_2020-06-23` -df$`new_deaths_2020-06-22`
-df <- df %>% filter( Cases >0)
+df <- df %>% filter( Deaths >0)
 ```
 ```{r}
 df %>% ggplot(aes(state,Cases)) +geom_col() +
   coord_flip() + labs(title="States that had a increase in Cases",
-                      subtitle ="From  June 21,2020 - June 22, 2020")
-
-df %>% filter(D >0) %>% ggplot(aes(state,D)) +geom_col() +
-  coord_flip() + labs(title="States that had a increase in Deaths",
-                      subtitle ="From  June 21,2020 - June 22, 2020")
-```
-```{r}
-SC <-ST %>% 
-    dplyr::mutate(C = sign(new_cases - dplyr::lag(new_cases)) > 0) %>% 
-    dplyr::filter(date == lubridate::ymd("2020-06-22") & C == T) %>% 
-    .[["state"]] 
-  
-   ggplot(aes(state,C)) +geom_col() +
-  coord_flip() + labs(title="States that had a increase in Cases",
                       subtitle ="From  June 22,2020 - June 23, 2020")
-  
+
+df %>% ggplot(aes(state,Deaths)) +geom_col() +
+  coord_flip() + labs(title="States that had a increase in Deaths",
+                      subtitle ="From  June 22,2020 - June 23, 2020")
 ```
+`
 
