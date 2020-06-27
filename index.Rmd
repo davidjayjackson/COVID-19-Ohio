@@ -1,7 +1,7 @@
 ---
 title:  "Ohio's Battle with COVID-19 "
 author: "David J Jackson"
-date: "June  26, 2020"
+date: "June  27, 2020"
 output: html_document
 ---
 
@@ -15,7 +15,7 @@ theme_set(theme_light())
 ```
 
 #### Disclaimer:
-* This is a personel project, 
+* This is a personnel project, 
 * I am not a employee of the state of Ohio. 
 * I am not employed in either the medical or data sceince fields.
 
