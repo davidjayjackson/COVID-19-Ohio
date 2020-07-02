@@ -1,7 +1,7 @@
 ---
 title:  "Ohio's Battle with COVID-19 "
 author: "David J Jackson"
-date: "July 1, 2020"
+date: "July 2, 2020"
 output: html_document
 ---
 
@@ -47,15 +47,9 @@ summarise(Cases=sum(cases), Deaths = sum(deaths))   %>%
    mutate(DeathRate = daily_deaths/daily_cases)
 ```
 ```{r}
-# 
-# state_date <- oh_state %>% group_by(county,date) %>% 
-#   summarise(Cases=sum(cases),   Deaths = sum(deaths),                               
-#    DeathRate = Deaths/Cases)
-
-```
-```{r,echo=FALSE}
-# us_counties$date <- as.Date(us_counties$date)
-# us_county_summary <- us_counties %>% group_by(state,county,date) %>% summarise(Cases=sum(cases),Deaths = sum(deaths),DeathRate = Deaths/Cases)
+library(forecast)
+buckeye$movavgCases <- ma(buckeye$daily_cases,order=7)
+buckeye$movavgDeaths <- ma(buckeye$daily_deaths,order=7)
 
 ```
 
@@ -64,11 +58,14 @@ summarise(Cases=sum(cases), Deaths = sum(deaths))   %>%
 
 ```{r}
 gg1 <- buckeye %>% ggplot() + 
-  geom_line(aes(x=date,y=daily_cases)) + 
+  geom_line(aes(x=date,y=daily_cases,col="Cases")) + 
+  geom_line(aes(x=date,y=movavgCases,col="7 Day Mov. Avg.")) +
      labs(title="Ohio Cases by Date",y="Daily Cases (log10)") + scale_y_log10()
 ```
 ```{r, echo=FALSE}
-gg2 <- buckeye %>% ggplot() + geom_line(aes(x=date,y=daily_deaths)) +
+gg2 <- buckeye %>% ggplot() + 
+  geom_line(aes(x=date,y=daily_deaths,col="Deaths")) + 
+  geom_line(aes(x=date,y=movavgDeaths,col="7 Day MOv. Avg.")) +
       labs(title="Ohio Deaths by Date",y="Daily Deaths(log10)") +
    theme(axis.text.x = element_text(angle = 45)) + scale_y_log10()
 
