@@ -1,7 +1,7 @@
 ---
 title: "Ohio Weekly COVID-19 Report"
 author: "David J Jackson"
-date: "6/25/2020"
+date: "7/4/2020"
 output: html_document
 ---
 
