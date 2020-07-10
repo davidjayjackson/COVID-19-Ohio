@@ -14,10 +14,10 @@ library(plotly)
 theme_set(theme_light())
 ```
 
-#### Disclaimer:
+### Disclaimer:
 * This is a personnel project, 
 * I am not a employee of the state of Ohio. 
-* I am not employed in either the medical or data sceince fields.
+* I am not employed in either the medical or data science fields.
 
 #### Data Source: NY Times
 * GitHub: https://github.com/nytimes/covid-19-data.git
@@ -25,7 +25,7 @@ theme_set(theme_light())
 
 ```{r, echo=FALSE}
 rm(list=ls())
-db <- dbConnect(SQLite(), dbname="../COVIDDB/CORVID.sqlite3")
+db <- dbConnect(SQLite(), dbname="../COVIDDB/COVID.sqlite3")
 
 us_states <- dbGetQuery(db, "SELECT state,date,cases,deaths FROM us_states;")
 us_counties <- dbGetQuery(db, "SELECT state,county,date,cases,deaths FROM us_counties;")
