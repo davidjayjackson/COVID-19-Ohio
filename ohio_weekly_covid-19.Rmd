@@ -1,7 +1,7 @@
 ---
 title: "Ohio Weekly COVID-19 Report"
 author: "David J Jackson"
-date: "7/8/2020"
+date: "7/11/2020"
 output: html_document
 ---
 
@@ -13,7 +13,7 @@ library(lubridate)
 ```
 ```{r}
 rm(list=ls())
-db <- dbConnect(SQLite(), dbname="../COVIDDB/CORVID.sqlite3")
+db <- dbConnect(SQLite(), dbname="../COVIDDB/COVID.sqlite3")
 
 us_states <- dbGetQuery(db, "SELECT state,date,cases,deaths FROM us_states;")
 us_states$date <-as.Date(us_states$date)
