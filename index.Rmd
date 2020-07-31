@@ -1,7 +1,7 @@
 ---
 title:  "Ohio's Battle with COVID-19 "
 author: "David J Jackson"
-date: "July 29, 2020"
+date: "July 31, 2020"
 output: html_document
 ---
 
@@ -81,18 +81,16 @@ ggplotly(gg3)
 ### Ohio Accumulated  Totals for Cases, Deaths  by Date and County
 
 ```{r,echo=FALSE}
-plot1 <-ggplot(oh_counties) + geom_line(aes(x=date,y=cases,col=county)) +
+ggplot(oh_counties) + geom_line(aes(x=date,y=cases,col=county)) +
   labs(title="Ohio Counties Daily Accumulated Cases by Date") +
   theme(axis.text.x = element_text(angle = 45)) +
   scale_y_continuous(labels = scales::comma) +
    theme_gray()
-ggplotly(plot1)
 
-plot2 <- ggplot(oh_counties) + geom_line(aes(x=date,y=deaths,col=county)) +
+ggplot(oh_counties) + geom_line(aes(x=date,y=deaths,col=county)) +
     theme(axis.text.x = element_text(angle = 90)) +
   labs(title="Ohio Counties Daily Accumulated Deaths by Date") +
   scale_y_continuous(labels = scales::comma) + theme_gray()
-ggplotly(plot2)
 
 ```
 ```{r}
