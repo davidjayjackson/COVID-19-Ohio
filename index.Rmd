@@ -39,8 +39,14 @@ grid(col="black")
 ```{r}
 US <- subset(df,date >="2020-04-01" & date <="2020-08-08")
 US$new_deaths14 <- movingAverage(US$new_deaths,14)
-plot(US$date,US$new_deaths,type="l",main="Ohio's COVID-19 Deaths Apr. 1,2020 - Aug. 12, 2020 \n (Red = 14 day moving average)",xlab="Date",ylab="Deaths")
+plot(US$date,US$new_deaths,type="l",main="Ohio's COVID-19 Deaths Apr. 1,2020 - Aug. 12, 2020 \n (Red = 14 day moving average)",xlab="Date",ylab="Deaths",col="blue")
 lines(US$date,US$new_deaths14,col="red")
+legend("bottomright",
+       c("Daily Deaths","14 Day Mov. Avg."),
+       col=c("blue","red"),
+       lty = c(1, 1),
+       cex = 0.8,
+       lwd=4)
 grid(col="black")
 ```
 
