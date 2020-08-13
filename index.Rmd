@@ -8,7 +8,7 @@ output:
     fig_height: 7
 ---
 
-```{r setup, include=FALSE,message=FALSE}
+```{r setup, include=FALSE,message=FALSE,echo=FALSE,warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 options(scipen=5)
 library(RSQLite)
@@ -26,14 +26,20 @@ str(df)
 ```{r}
 US <- subset(df,date >="2020-04-01")
 US$MA14 <- movingAverage(US$new_cases,14)
-plot(US$date,US$new_cases,type="l",main="Ohio's COVID-19 new_cases Apr. 1,2020 - Aug. 12, 2020")
+plot(US$date,US$new_cases,type="l",main="Ohio's COVID-19 Cases Apr. 1,2020 - Aug. 12, 2020 \n ( Red line = 14 day moving avearge)",xlab="Date",ylab="Cases",col="blue") 
 lines(US$date,US$MA14,col="red")
+legend("bottomright",
+       c("Daily Cases","14 Day Mov. Avg."),
+       col=c("blue","red"),
+       lty = c(1, 1),
+       cex = 0.8,
+       lwd=4)
 grid(col="black")
 ```
 ```{r}
 US <- subset(df,date >="2020-04-01" & date <="2020-08-08")
 US$new_deaths14 <- movingAverage(US$new_deaths,14)
-plot(US$date,US$new_deaths,type="l",main="Ohio's COVID-19 new_deaths Apr. 1,2020 - Aug. 12, 2020")
+plot(US$date,US$new_deaths,type="l",main="Ohio's COVID-19 Deaths Apr. 1,2020 - Aug. 12, 2020 \n (Red = 14 day moving average)",xlab="Date",ylab="Deaths")
 lines(US$date,US$new_deaths14,col="red")
 grid(col="black")
 ```
@@ -54,9 +60,9 @@ Weekly_new_deaths <- aggregate(new_deaths~Weekly,US,FUN=sum)
 
 ```
 ```{r}
-barplot(new_cases ~Weekly,data=Weekly_new_cases,main="Ohio's Weekly Barplot of new_cases")
+barplot(new_cases ~Weekly,data=Weekly_new_cases,main="Ohio's Weekly Barplot of Cases",xlab="Date",ylab="Cases")
 grid(col="black")
-barplot(new_deaths ~Weekly,data=Weekly_new_deaths,main="Ohio's Weekly Barplot of new_deaths")
+barplot(new_deaths ~Weekly,data=Weekly_new_deaths,main="Ohio's Weekly Barplot of Deaths",xlab="Date",ylab="Deaths")
 grid(col="black")
 ```
 ```{r}
@@ -65,34 +71,32 @@ Monthly_new_cases <- aggregate(new_cases~Monthly,US,FUN=sum)
 Monthly_new_deaths <- aggregate(new_deaths~Monthly,US,FUN=sum)
 ```
 ```{r}
-barplot(new_cases ~Monthly,data=Monthly_new_cases,main="Ohio's Monthly Barplot of Total new_cases")
+barplot(new_cases ~Monthly,data=Monthly_new_cases,main="Ohio's Monthly Barplot of Total Cases",xlab="Date",ylab="Cases" )
 grid(col="black")
-barplot(new_deaths ~Monthly,data=Monthly_new_deaths,main="Ohio's Monthly Barplot of Total new_deaths")
+barplot(new_deaths ~Monthly,data=Monthly_new_deaths,main="Ohio's Monthly Barplot of Total Deaths",xlab="Date",ylab="Deaths")
 grid(col="black")
 ```
 
 ### Weekly and Monthly Mean COVID-19 new_cases And new_deaths
 
-```
 ```{r}
 Weekly_new_cases <- aggregate(new_cases~Weekly,US,FUN=mean)
 Weekly_new_deaths <- aggregate(new_deaths~Weekly,US,FUN=mean)
 
-```
-```{r}
-barplot(new_cases ~Weekly,data=Weekly_new_cases,main="Ohio's Weekly Barplot of Mean new_cases")
-grid(col="black")
-barplot(new_deaths ~Weekly,data=Weekly_new_deaths,main="Ohio's Weekly Barplot of Mean new_deaths")
-grid(col="black")
-```
-```{r}
 
+barplot(new_cases ~Weekly,data=Weekly_new_cases,main="Ohio's Weekly Barplot of Mean Cases",xlab="Date",ylab="Cases")
+grid(col="black")
+barplot(new_deaths ~Weekly,data=Weekly_new_deaths,main="Ohio's Weekly Barplot of Mean Deaths",xlab="Date",ylab="Deaths")
+grid(col="black")
+```
+```{r}
 Monthly_new_cases <- aggregate(new_cases~Monthly,US,FUN=mean)
 Monthly_new_deaths <- aggregate(new_deaths~Monthly,US,FUN=mean)
-```
-```{r}
-barplot(new_cases ~Monthly,data=Monthly_new_cases,main="Ohio's Monthly Mean Barplot of new_cases")
+
+
+barplot(new_cases ~Monthly,data=Monthly_new_cases,main="Ohio's Monthly Mean Barplot of Cases",xlab="Date",ylab="Cases")
 grid(col="black")
-barplot(new_deaths ~Monthly,data=Monthly_new_deaths,main="Ohio's Monthly Mean Barplot of new_deaths")
+
+barplot(new_deaths ~Monthly,data=Monthly_new_deaths,main="Ohio's Monthly Mean Barplot of new_deaths",xlab="Date",ylab="Deaths")
 grid(col="black")
 ```
