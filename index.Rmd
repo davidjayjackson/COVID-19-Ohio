@@ -1,109 +1,98 @@
 ---
-title:  "Ohio's Battle with COVID-19 "
+title: "Ohio's Battle With COVID-19"
 author: "David J Jackson"
-date: "August 12, 2020"
-output: html_document
+date: "8/12/2020"
+output: 
+  html_document: 
+    fig_width: 9
+    fig_height: 7
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE,message=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-# knitr::opts_chunk$set(fig.width=9, fig.height=6)
-library(tidyverse)
+options(scipen=5)
 library(RSQLite)
-library(plotly)
-theme_set(theme_light())
 ```
-
-### Disclaimer:
-* This is a personnel project, 
-* I am not a employee of the state of Ohio. 
-* I am not employed in either the medical or data science fields.
-
-#### Data Source: NY Times
-* GitHub: https://github.com/nytimes/covid-19-data.git
-
-
-```{r, echo=FALSE}
+```{r}
 rm(list=ls())
-db <- dbConnect(SQLite(), dbname="../COVIDDB/COVID.sqlite3")
-
-us_states <- dbGetQuery(db, "SELECT state,date,cases,deaths FROM us_states;")
-us_counties <- dbGetQuery(db, "SELECT state,county,date,cases,deaths FROM us_counties;")
-
-us_states$date <-as.Date(us_states$date)
-us_counties$date <- as.Date(us_counties$date)
-
-oh_state <- us_states %>% filter(state=="Ohio")  
-oh_counties <- us_counties %>% filter(state=="Ohio")
-
-```
-
-```{r,echo=FALSE}
-  
-buckeye <- oh_state %>% group_by(date) %>% 
-summarise(Cases=sum(cases), Deaths = sum(deaths))   %>%
-   mutate(daily_deaths = Deaths - lag(Deaths)) %>% 
-   mutate(daily_cases = Cases -  lag(Cases)) %>%
-   mutate(DeathRate = daily_deaths/daily_cases)
-```
-```{r}
-library(forecast)
-buckeye$movavgCases <- ma(buckeye$daily_cases,order=7)
-buckeye$movavgDeaths <- ma(buckeye$daily_deaths,order=7)
-
-```
-
-
-###  Ohio Totals for Cases, Deaths  by Date 
-
-```{r}
-gg1 <- buckeye %>% ggplot() + 
-  geom_line(aes(x=date,y=daily_cases,col="Cases")) + 
-  geom_line(aes(x=date,y=movavgCases,col="7 Day Mov. Avg.")) +
-     labs(title="Ohio Cases by Date",y="Daily Cases (log10)") + scale_y_log10()
-```
-```{r, echo=FALSE}
-gg2 <- buckeye %>% ggplot() + 
-  geom_line(aes(x=date,y=daily_deaths,col="Deaths")) + 
-  geom_line(aes(x=date,y=movavgDeaths,col="7 Day MOv. Avg.")) +
-      labs(title="Ohio Deaths by Date",y="Daily Deaths(log10)") +
-   theme(axis.text.x = element_text(angle = 45)) + scale_y_log10()
-
-gg3 <- buckeye %>% filter(date >= Sys.Date() - 30) %>% ggplot() + geom_col(aes(x=date,y=DeathRate)) +
-      labs(title="Ohio Death Rate by Date") + 
-  scale_y_continuous(labels = scales::percent) +
-   theme(axis.text.x = element_text(angle = 45))
-ggplotly(gg1)
-ggplotly(gg2)
-ggplotly(gg3)
-```
-
-### Ohio Accumulated  Totals for Cases, Deaths  by Date and County
-
-```{r,echo=FALSE}
-ggplot(oh_counties) + geom_line(aes(x=date,y=cases,col=county)) +
-  labs(title="Ohio Counties Daily Accumulated Cases by Date") +
-  theme(axis.text.x = element_text(angle = 45)) +
-  scale_y_continuous(labels = scales::comma) +
-   theme_gray()
-
-ggplot(oh_counties) + geom_line(aes(x=date,y=deaths,col=county)) +
-    theme(axis.text.x = element_text(angle = 90)) +
-  labs(title="Ohio Counties Daily Accumulated Deaths by Date") +
-  scale_y_continuous(labels = scales::comma) + theme_gray()
+source("../DATA/movavg.R")
+db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVIDDB/COVID.sqlite3")
+df <- dbGetQuery(db,"select * from STATESDAILY")
+df <- subset(df,state =="Ohio" & new_cases >0 )
+df$date <- as.Date(df$date)
+str(df)
 
 ```
 ```{r}
-buckeye %>% ggplot() +
-  geom_col(aes(x=date,y=Cases)) + 
-     labs(title="Ohio Accumulated Cases by Date",x="Date",y="Accumulated Cases(log10)") +
-     scale_y_log10(labels = scales::comma) + geom_smooth(aes(x=date,y=Cases))
+US <- subset(df,date >="2020-04-01")
+US$MA14 <- movingAverage(US$new_cases,14)
+plot(US$date,US$new_cases,type="l",main="Ohio's COVID-19 new_cases Apr. 1,2020 - Aug. 12, 2020")
+lines(US$date,US$MA14,col="red")
+grid(col="black")
 ```
 ```{r}
-buckeye %>% ggplot() +
-  geom_col(aes(x=date,y=Deaths)) + 
-     labs(title="Ohio Accumulated Deaths by Date",x="Date",y="Accumulated Cases(log10)") +
-     scale_y_log10(labels = scales::comma) + geom_smooth(aes(x=date,y=Deaths))
+US <- subset(df,date >="2020-04-01" & date <="2020-08-08")
+US$new_deaths14 <- movingAverage(US$new_deaths,14)
+plot(US$date,US$new_deaths,type="l",main="Ohio's COVID-19 new_deaths Apr. 1,2020 - Aug. 12, 2020")
+lines(US$date,US$new_deaths14,col="red")
+grid(col="black")
 ```
 
+#### Non-Moving Average By Week and By Month
 
+```{r}
+US$Monthly <- as.Date(cut(US$date,
+  breaks = "month"))
+US$Weekly <- as.Date(cut(US$date,
+  breaks = "week",
+  start.on.monday = FALSE))
+
+```
+```{r}
+Weekly_new_cases <- aggregate(new_cases~Weekly,US,FUN=sum)
+Weekly_new_deaths <- aggregate(new_deaths~Weekly,US,FUN=sum)
+
+```
+```{r}
+barplot(new_cases ~Weekly,data=Weekly_new_cases,main="Ohio's Weekly Barplot of new_cases")
+grid(col="black")
+barplot(new_deaths ~Weekly,data=Weekly_new_deaths,main="Ohio's Weekly Barplot of new_deaths")
+grid(col="black")
+```
+```{r}
+
+Monthly_new_cases <- aggregate(new_cases~Monthly,US,FUN=sum)
+Monthly_new_deaths <- aggregate(new_deaths~Monthly,US,FUN=sum)
+```
+```{r}
+barplot(new_cases ~Monthly,data=Monthly_new_cases,main="Ohio's Monthly Barplot of Total new_cases")
+grid(col="black")
+barplot(new_deaths ~Monthly,data=Monthly_new_deaths,main="Ohio's Monthly Barplot of Total new_deaths")
+grid(col="black")
+```
+
+### Weekly and Monthly Mean COVID-19 new_cases And new_deaths
+
+```
+```{r}
+Weekly_new_cases <- aggregate(new_cases~Weekly,US,FUN=mean)
+Weekly_new_deaths <- aggregate(new_deaths~Weekly,US,FUN=mean)
+
+```
+```{r}
+barplot(new_cases ~Weekly,data=Weekly_new_cases,main="Ohio's Weekly Barplot of Mean new_cases")
+grid(col="black")
+barplot(new_deaths ~Weekly,data=Weekly_new_deaths,main="Ohio's Weekly Barplot of Mean new_deaths")
+grid(col="black")
+```
+```{r}
+
+Monthly_new_cases <- aggregate(new_cases~Monthly,US,FUN=mean)
+Monthly_new_deaths <- aggregate(new_deaths~Monthly,US,FUN=mean)
+```
+```{r}
+barplot(new_cases ~Monthly,data=Monthly_new_cases,main="Ohio's Monthly Mean Barplot of new_cases")
+grid(col="black")
+barplot(new_deaths ~Monthly,data=Monthly_new_deaths,main="Ohio's Monthly Mean Barplot of new_deaths")
+grid(col="black")
+```
