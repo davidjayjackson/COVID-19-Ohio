@@ -14,6 +14,7 @@ options(scipen=5)
 library(RSQLite)
 ```
 ```{r}
+## State Data
 rm(list=ls())
 source("../DATA/movavg.R")
 db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVIDDB/COVID.sqlite3")
@@ -22,6 +23,11 @@ df <- subset(df,state =="Ohio" & new_cases >0 )
 df$date <- as.Date(df$date)
 str(df)
 
+## County Data
+## County Data
+DF <- dbGetQuery(db,"select date,state,county,new_cases,new_deaths from  COUNTYDAILY where state='Ohio'")
+DF$date <- as.Date(DF$date)
+str(DF$date)
 ```
 ```{r}
 US <- subset(df,date >="2020-04-01")
@@ -105,4 +111,18 @@ grid(col="black")
 
 barplot(new_deaths ~Monthly,data=Monthly_new_deaths,main="Ohio's Monthly Mean Barplot of new_deaths",xlab="Date",ylab="Deaths")
 grid(col="black")
+```
+
+### Top Five Counties Based on Daily Totals for Aug. 28
+
+```{r}
+# df <- subset(DF,date =="2020-08-27" )
+# df$new_cases <- sort(df$new_cases)
+# df_cases <-head(df,n=5)
+# barplot(new_cases ~county,data=df_cases,main="Top 5 Counties Ranked by single Day Cases",xlab="(For August 28, 2020)",ylab="Cases")
+# grid(col="black")
+# df$new_deaths <- sort(df$new_deaths,decreasing=TRUE)
+# df_deaths <-head(df,n=5)
+# barplot(new_deaths ~county,data=df_deaths,main="Top 5 Counties Ranked by single Day Deaths",xlab="(For August 28, 2020)",ylab="Cases")
+# grid(col="black")
 ```
