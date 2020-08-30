@@ -116,13 +116,14 @@ grid(col="black")
 ### Top Five Counties Based on Daily Totals for Aug. 28
 
 ```{r}
-# df <- subset(DF,date =="2020-08-27" )
-# df$new_cases <- sort(df$new_cases)
-# df_cases <-head(df,n=5)
-# barplot(new_cases ~county,data=df_cases,main="Top 5 Counties Ranked by single Day Cases",xlab="(For August 28, 2020)",ylab="Cases")
-# grid(col="black")
-# df$new_deaths <- sort(df$new_deaths,decreasing=TRUE)
-# df_deaths <-head(df,n=5)
-# barplot(new_deaths ~county,data=df_deaths,main="Top 5 Counties Ranked by single Day Deaths",xlab="(For August 28, 2020)",ylab="Cases")
-# grid(col="black")
+df <- subset(DF,date =="2020-08-29" )
+Top <- df[order(df$new_cases,decreasing = TRUE),]
+Top5 <-head(Top,n=5)
+barplot(new_cases ~county,data=Top5,main="Top 5 Counties Ranked by single Day Cases",xlab="(For August 29, 2020)",ylab="Cases")
+grid(col="black")
+
+Topd <- df[order(df$new_deaths,decreasing = TRUE),]
+Top5d <-head(Topd,n=5)
+barplot(new_deaths ~county,data=Top5d,main="Top 5 Counties Ranked by single Day Deaths",xlab="(For August 29, 2020)",ylab="Cases")
+grid(col="black")
 ```
