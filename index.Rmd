@@ -1,7 +1,7 @@
 ---
 title: "Ohio's Battle With COVID-19"
 author: "David J Jackson"
-date: "8/30/2020"
+date: "8/31/2020"
 output: 
   html_document: 
     fig_width: 9
@@ -116,7 +116,7 @@ grid(col="black")
 ### Top Five Counties Based on Daily Totals for Aug. 28
 
 ```{r}
-df <- subset(DF,date =="2020-08-29" )
+df <- subset(DF,date =="2020-08-30" )
 Top <- df[order(df$new_cases,decreasing = TRUE),]
 Top5 <-head(Top,n=5)
 barplot(new_cases ~county,data=Top5,main="Top 5 Counties Ranked by single Day Cases",xlab="(For August 29, 2020)",ylab="Cases")
