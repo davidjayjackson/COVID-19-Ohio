@@ -1,7 +1,7 @@
 ---
 title: "Ohio's Battle With COVID-19"
 author: "David J Jackson"
-date: "8/31/2020"
+date: "09/01/2020"
 output: 
   html_document: 
     fig_width: 9
@@ -32,7 +32,7 @@ str(DF$date)
 ```{r}
 US <- subset(df,date >="2020-04-01")
 US$MA14 <- movingAverage(US$new_cases,14)
-plot(US$date,US$new_cases,type="l",main="Ohio's COVID-19 Cases Apr. 1,2020 - Aug. 31, 2020 \n ( Red line = 14 day moving avearge)",xlab="Date",ylab="Cases",col="blue") 
+plot(US$date,US$new_cases,type="l",main="Ohio's COVID-19 Cases Apr. 1,2020 - Present \n ( Red line = 14 day moving avearge)",xlab="Date",ylab="Cases",col="blue") 
 lines(US$date,US$MA14,col="red")
 legend("bottomright",
        c("Daily Cases","14 Day Mov. Avg."),
@@ -43,9 +43,8 @@ legend("bottomright",
 grid(col="black")
 ```
 ```{r}
-US <- subset(df,date >="2020-04-01" )
 US$new_deaths14 <- movingAverage(US$new_deaths,14)
-plot(US$date,US$new_deaths,type="l",main="Ohio's COVID-19 Deaths Apr. 1,2020 - Aug. 31, 2020 \n (Red = 14 day moving average)",xlab="Date",ylab="Deaths",col="blue")
+plot(US$date,US$new_deaths,type="l",main="Ohio's COVID-19 Deaths Apr. 1,2020 - Present \n (Red = 14 day moving average)",xlab="Date",ylab="Deaths",col="blue")
 lines(US$date,US$new_deaths14,col="red")
 legend("topright",
        c("Daily Deaths","14 Day Mov. Avg."),
@@ -116,7 +115,7 @@ grid(col="black")
 ### Top Five Counties Based on Daily Totals for Aug. 28
 
 ```{r}
-df <- subset(DF,date =="2020-08-30" )
+df <- subset(DF,date =="2020-08-31" )
 Top <- df[order(df$new_cases,decreasing = TRUE),]
 Top5 <-head(Top,n=5)
 barplot(new_cases ~county,data=Top5,main="Top 5 Counties Ranked by single Day Cases",xlab="(For August 29, 2020)",ylab="Cases")
