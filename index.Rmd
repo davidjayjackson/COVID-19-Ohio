@@ -1,7 +1,7 @@
 ---
 title: "Ohio's Battle With COVID-19"
 author: "David J Jackson"
-date: "09/03/2020"
+date: "09/04/2020"
 output: 
   html_document: 
     fig_width: 9
@@ -19,6 +19,7 @@ rm(list=ls())
 source("../DATA/movavg.R")
 db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVIDDB/COVID.sqlite3")
 df <- dbGetQuery(db,"select * from STATESDAILY")
+df <- df[order(df$date,decreasing = TRUE),]
 df <- subset(df,state =="Ohio" & new_cases >0 )
 df$date <- as.Date(df$date)
 str(df)
@@ -118,11 +119,11 @@ grid(col="black")
 df <- subset(DF,date =="2020-08-31" )
 Top <- df[order(df$new_cases,decreasing = TRUE),]
 Top5 <-head(Top,n=5)
-barplot(new_cases ~county,data=Top5,main="Top 5 Counties Ranked by single Day Cases",xlab="(For August 29, 2020)",ylab="Cases")
+barplot(new_cases ~county,data=Top5,main="Top 5 Counties Ranked by single Day Cases",xlab="(For Sept 3, 2020)",ylab="Cases")
 grid(col="black")
 
 Topd <- df[order(df$new_deaths,decreasing = TRUE),]
 Top5d <-head(Topd,n=5)
-barplot(new_deaths ~county,data=Top5d,main="Top 5 Counties Ranked by single Day Deaths",xlab="(For August 29, 2020)",ylab="Cases")
+barplot(new_deaths ~county,data=Top5d,main="Top 5 Counties Ranked by single Day Deaths",xlab="(For Sept 3, 2020)",ylab="Cases")
 grid(col="black")
 ```
