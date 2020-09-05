@@ -113,17 +113,17 @@ barplot(new_deaths ~Monthly,data=Monthly_new_deaths,main="Ohio's Monthly Mean Ba
 grid(col="black")
 ```
 
-### Top Five Counties Based on Daily Totals for Aug. 28
+### Top Five Counties Based on Daily Totals for Sept. 4, 2020
 
 ```{r}
-df <- subset(DF,date =="2020-08-31" )
+df <- subset(DF,date =="2020-09-04" )
 Top <- df[order(df$new_cases,decreasing = TRUE),]
 Top5 <-head(Top,n=5)
-barplot(new_cases ~county,data=Top5,main="Top 5 Counties Ranked by single Day Cases",xlab="(For Sept 3, 2020)",ylab="Cases")
+barplot(new_cases ~county,data=Top5,main="Top 5 Counties Ranked by single Day Cases",xlab="(For Sept 4, 2020)",ylab="Cases")
 grid(col="black")
 
 Topd <- df[order(df$new_deaths,decreasing = TRUE),]
 Top5d <-head(Topd,n=5)
-barplot(new_deaths ~county,data=Top5d,main="Top 5 Counties Ranked by single Day Deaths",xlab="(For Sept 3, 2020)",ylab="Cases")
+barplot(new_deaths ~county,data=Top5d,main="Top 5 Counties Ranked by single Day Deaths",xlab="(For Sept 4, 2020)",ylab="Cases")
 grid(col="black")
 ```
