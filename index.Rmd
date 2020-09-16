@@ -1,7 +1,7 @@
 ---
 title: "Ohio's Battle With COVID-19"
 author: "David J Jackson"
-date: "09/14/2020"
+date: "09/16/2020"
 output: 
   html_document: 
     fig_width: 9
@@ -113,10 +113,10 @@ barplot(new_deaths ~Monthly,data=Monthly_new_deaths,main="Ohio's Monthly Mean Ba
 grid(col="black")
 ```
 
-### Top Five Counties Based on Daily Totals for Sept. 5, 2020
+### Top Five Counties Based on Daily Totals for Previous 8 Days
 
 ```{r}
-df <- subset(DF,date =="2020-09-13" )
+df <- subset(DF,date ==Sys.Date() -8 )
 Top <- df[order(df$new_cases,decreasing = TRUE),]
 Top5 <-head(Top,n=5)
 barplot(new_cases ~county,data=Top5,main="Top 5 Counties Ranked by single Day Cases",xlab="(For Sept 13, 2020)",ylab="Cases")
@@ -127,6 +127,7 @@ Top5d <-head(Topd,n=5)
 barplot(new_deaths ~county,data=Top5d,main="Top 5 Counties Ranked by single Day Deaths",xlab="(For Sept 13, 2020)",ylab="Cases")
 grid(col="black")
 ```
+
 ### Plot of Franklin Country Daily Cases and Deaths
 
 ```{r}
