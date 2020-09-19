@@ -1,7 +1,7 @@
 ---
 title: "Ohio's Battle With COVID-19"
 author: "David J Jackson"
-date: "09/18/2020"
+date: "09/19/2020"
 output: 
   html_document: 
     fig_width: 9
@@ -20,7 +20,7 @@ source("../DATA/movavg.R")
 db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVIDDB/COVID.sqlite3")
 df <- dbGetQuery(db,"select * from STATESDAILY")
 df <- df[order(df$date,decreasing = TRUE),]
-df <- subset(df,state =="Ohio" & new_cases >0 )
+df <- subset(df,state =="Ohio" & date >="2020-03-10" )
 df$date <- as.Date(df$date)
 str(df)
 
