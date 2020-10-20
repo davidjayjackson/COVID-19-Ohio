@@ -13,7 +13,7 @@ library(RSQLite)
 ```
 
 ```{r}
-## State Data
+### State Data
 rm(list=ls())
 source("../DATA/movavg.R")
 db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVIDDB/COVID.sqlite3")
