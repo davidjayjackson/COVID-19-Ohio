@@ -1,7 +1,7 @@
 ---
 title: "Ohio COVID-19 Daily Report"
 author: "David Jackson"
-date: "11/03/2020"
+date: "11/04/2020"
 output: html_document
 ---
 
@@ -30,6 +30,7 @@ DF <- dbGetQuery(db,"select date,state,county,new_cases,new_deaths from  COUNTYD
 DF$date <- as.Date(DF$date)
 str(DF$date)
 ```
+
 #### Daily COVID19 Cases and Deaths
 
 
