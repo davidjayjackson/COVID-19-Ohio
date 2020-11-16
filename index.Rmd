@@ -1,7 +1,7 @@
 ---
 title: "Ohio COVID-19 Daily Report"
 author: "David Jackson"
-date: "11/15/2020"
+date: "11/16/2020"
 output: html_document
 ---
 
@@ -37,11 +37,11 @@ str(DF$date)
 ```{r}
 US <- subset(df,date >="2020-04-01")
 ggplot(US,aes(x=date,y=new_cases)) + geom_line() +
-  geom_smooth(span=0.25) +
+  geom_smooth(span=0.25,se=FALSE) +
   labs(title="Ohio Daily COVID19 Cases by Date")
 
 ggplot(US,aes(x=date,y=new_deaths)) + geom_line() +
-  geom_smooth(span=0.25) +
+  geom_smooth(span=0.25,se=FALSE) +
   labs(title="Ohio Daily COVID19 Deaths by Date")
 ```
 
@@ -61,7 +61,7 @@ Weekly_new_deaths <- aggregate(new_deaths~Weekly,US,FUN=sum)
 ```
 ```{r}
 ggplot(Weekly_new_cases,aes(x=Weekly,y=new_cases)) + geom_col() +
-  geom_smooth(span=0.25) + labs(title="Weekly COVID19 Cases")
+  geom_smooth(span=0.25,se=FALSE) + labs(title="Weekly COVID19 Cases")
 
 ggplot(Weekly_new_deaths,aes(x=Weekly,y=new_deaths)) + geom_col() +
   geom_smooth(span=0.25) + labs(title="Weekly COVID19 Deaths")
