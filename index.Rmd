@@ -1,7 +1,7 @@
 ---
 title: "Ohio COVID-19 Daily Report"
 author: "David Jackson"
-date: "11/18/2020"
+date: "11/20/2020"
 output: html_document
 ---
 
@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 library(scales)
 library(RSQLite)
+library(dplyr)
 ```
 
 ```{r}
@@ -18,18 +19,29 @@ rm(list=ls())
 source("../DATA/movavg.R")
 db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVIDDB/COVID.sqlite3")
 df <- dbGetQuery(db,"select * from STATESDAILY")
-df <- df[order(df$date,decreasing = TRUE),]
+df <- df[order(df$date),]
 df <- subset(df,state =="Ohio" & date >="2020-03-10" )
 df$date <- as.Date(df$date)
 mean(df$new_cases)
 mean(df$new_deaths)
-
+mean(is.na(df$death_rate))
 ## County Data
 ## County Data
 DF <- dbGetQuery(db,"select date,state,county,new_cases,new_deaths from  COUNTYDAILY where state='Ohio'")
 DF$date <- as.Date(DF$date)
 str(DF$date)
 ```
+
+#### Mortality Rate by Date
+
+```{r}
+ggplot(df) + geom_line(aes(x=date,y=death_rate)) +
+  scale_y_continuous(labels=percent)
+
+```
+
+
+
 
 #### Daily COVID19 Cases and Deaths
 
@@ -64,7 +76,7 @@ ggplot(Weekly_new_cases,aes(x=Weekly,y=new_cases)) + geom_col() +
   geom_smooth(span=0.25,se=FALSE) + labs(title="Weekly COVID19 Cases")
 
 ggplot(Weekly_new_deaths,aes(x=Weekly,y=new_deaths)) + geom_col() +
-  geom_smooth(span=0.25) + labs(title="Weekly COVID19 Deaths")
+  geom_smooth(span=0.25,se=FALSE) + labs(title="Weekly COVID19 Deaths")
 ```
 ```{r}
 monthly_new_cases <- aggregate(new_cases~Monthly,US,FUN=sum)
