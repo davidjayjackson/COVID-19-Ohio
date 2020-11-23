@@ -1,7 +1,7 @@
 ---
 title: "Ohio COVID-19 Daily Report"
 author: "David Jackson"
-date: "11/20/2020"
+date: "11/23/2020"
 output: html_document
 ---
 
@@ -11,6 +11,7 @@ library(ggplot2)
 library(scales)
 library(RSQLite)
 library(dplyr)
+theme_set(theme_linedraw() + theme(panel.grid = element_line(linetype = 'dashed')))
 ```
 
 ```{r}
