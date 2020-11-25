@@ -1,7 +1,7 @@
 ---
 title: "Ohio COVID-19 Daily Report"
 author: "David Jackson"
-date: "11/24/2020"
+date: "11/25/2020"
 output: html_document
 ---
 
@@ -37,7 +37,8 @@ str(DF$date)
 
 ```{r}
 ggplot(df) + geom_line(aes(x=date,y=death_rate)) +
-  scale_y_continuous(labels=percent)
+  scale_y_continuous(labels=percent) +
+  geom_hline(yintercept = 0.025,col="red")
 
 ```
 
