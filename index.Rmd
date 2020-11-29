@@ -32,6 +32,13 @@ DF <- dbGetQuery(db,"select date,state,county,new_cases,new_deaths from  COUNTYD
 DF$date <- as.Date(DF$date)
 str(DF$date)
 ```
+```{r}
+### Fix Numbers for Nov. 26 - 27 
+df$new_cases <-ifelse(df$date =="2020-11-26",mean(df$new_cases),df$new_cases)
+df$new_deaths <-ifelse(df$date =="2020-11-26",mean(df$new_deaths),df$new_deaths)
+df$new_cases <-ifelse(df$date =="2020-11-27",mean(df$new_cases),df$new_cases)
+df$new_deaths <-ifelse(df$date =="2020-11-27",mean(df$new_deaths),df$new_deaths)
+```
 
 #### Mortality Rate by Date
 
