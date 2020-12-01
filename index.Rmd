@@ -1,7 +1,7 @@
 ---
 title: "Ohio COVID-19 Daily Report"
 author: "David Jackson"
-date: "11/28/2020"
+date: "12/01/2020"
 output: html_document
 ---
 
@@ -34,10 +34,10 @@ str(DF$date)
 ```
 ```{r}
 ### Fix Numbers for Nov. 26 - 27 
-df$new_cases <-ifelse(df$date =="2020-11-26",mean(df$new_cases),df$new_cases)
-df$new_deaths <-ifelse(df$date =="2020-11-26",mean(df$new_deaths),df$new_deaths)
-df$new_cases <-ifelse(df$date =="2020-11-27",mean(df$new_cases),df$new_cases)
-df$new_deaths <-ifelse(df$date =="2020-11-27",mean(df$new_deaths),df$new_deaths)
+# df$new_cases <-ifelse(df$date =="2020-11-26",mean(df$new_cases),df$new_cases)
+# df$new_deaths <-ifelse(df$date =="2020-11-26",mean(df$new_deaths),df$new_deaths)
+# df$new_cases <-ifelse(df$date =="2020-11-27",mean(df$new_cases),df$new_cases)
+# df$new_deaths <-ifelse(df$date =="2020-11-27",mean(df$new_deaths),df$new_deaths)
 ```
 
 #### Mortality Rate by Date
