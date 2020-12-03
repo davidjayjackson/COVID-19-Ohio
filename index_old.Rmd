@@ -1,0 +1,143 @@
+---
+title: "Ohio's Battle With COVID-19"
+author: "David J Jackson"
+date: "10-20-2020"
+output: 
+  html_document: 
+    fig_width: 9
+    fig_height: 7
+---
+
+```{r setup, include=FALSE,message=FALSE,echo=FALSE,warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(scipen=5)
+library(RSQLite)
+```
+```{r}
+## State Data
+rm(list=ls())
+source("../DATA/movavg.R")
+db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVIDDB/COVID.sqlite3")
+df <- dbGetQuery(db,"select * from STATESDAILY")
+df <- df[order(df$date,decreasing = TRUE),]
+df <- subset(df,state =="Ohio" & date >="2020-03-10" )
+df$date <- as.Date(df$date)
+str(df)
+
+## County Data
+## County Data
+DF <- dbGetQuery(db,"select date,state,county,new_cases,new_deaths from  COUNTYDAILY where state='Ohio'")
+DF$date <- as.Date(DF$date)
+str(DF$date)
+```
+```{r}
+US <- subset(df,date >="2020-04-01")
+US$MA14 <- movingAverage(US$new_cases,14)
+plot(US$date,US$new_cases,type="l",main="Ohio's COVID-19 Cases Apr. 1,2020 - Present \n ( Red line = 14 day moving avearge)",xlab="Date",ylab="Cases",col="blue") 
+lines(US$date,US$MA14,col="red")
+legend("bottomright",
+       c("Daily Cases","14 Day Mov. Avg."),
+       col=c("blue","red"),
+       lty = c(1, 1),
+       cex = 0.8,
+       lwd=4)
+grid(col="black")
+```
+```{r}
+US$new_deaths14 <- movingAverage(US$new_deaths,14)
+plot(US$date,US$new_deaths,type="l",main="Ohio's COVID-19 Deaths Apr. 1,2020 - Present \n (Red = 14 day moving average)",xlab="Date",ylab="Deaths",col="blue")
+lines(US$date,US$new_deaths14,col="red")
+legend("topright",
+       c("Daily Deaths","14 Day Mov. Avg."),
+       col=c("blue","red"),
+       lty = c(1, 1),
+       cex = 0.8,
+       lwd=4)
+grid(col="black")
+```
+
+#### Non-Moving Average By Week and By Month
+
+```{r}
+US$Monthly <- as.Date(cut(US$date,
+  breaks = "month"))
+US$Weekly <- as.Date(cut(US$date,
+  breaks = "week",
+  start.on.monday = FALSE))
+
+```
+```{r}
+Weekly_new_cases <- aggregate(new_cases~Weekly,US,FUN=sum)
+Weekly_new_deaths <- aggregate(new_deaths~Weekly,US,FUN=sum)
+
+```
+```{r}
+barplot(new_cases ~Weekly,data=Weekly_new_cases,main="Ohio's Weekly Barplot of Cases",xlab="Date",ylab="Cases")
+grid(col="black")
+barplot(new_deaths ~Weekly,data=Weekly_new_deaths,main="Ohio's Weekly Barplot of Deaths",xlab="Date",ylab="Deaths")
+grid(col="black")
+```
+```{r}
+
+Monthly_new_cases <- aggregate(new_cases~Monthly,US,FUN=sum)
+Monthly_new_deaths <- aggregate(new_deaths~Monthly,US,FUN=sum)
+```
+```{r}
+barplot(new_cases ~Monthly,data=Monthly_new_cases,main="Ohio's Monthly Barplot of Total Cases",xlab="Date",ylab="Cases" )
+grid(col="black")
+barplot(new_deaths ~Monthly,data=Monthly_new_deaths,main="Ohio's Monthly Barplot of Total Deaths",xlab="Date",ylab="Deaths")
+grid(col="black")
+```
+
+### Weekly and Monthly Mean COVID-19 new_cases And new_deaths
+
+```{r}
+Weekly_new_cases <- aggregate(new_cases~Weekly,US,FUN=mean)
+Weekly_new_deaths <- aggregate(new_deaths~Weekly,US,FUN=mean)
+
+
+barplot(new_cases ~Weekly,data=Weekly_new_cases,main="Ohio's Weekly Barplot of Mean Cases",xlab="Date",ylab="Cases")
+grid(col="black")
+barplot(new_deaths ~Weekly,data=Weekly_new_deaths,main="Ohio's Weekly Barplot of Mean Deaths",xlab="Date",ylab="Deaths")
+grid(col="black")
+```
+```{r}
+Monthly_new_cases <- aggregate(new_cases~Monthly,US,FUN=mean)
+Monthly_new_deaths <- aggregate(new_deaths~Monthly,US,FUN=mean)
+
+
+barplot(new_cases ~Monthly,data=Monthly_new_cases,main="Ohio's Monthly Mean Barplot of Cases",xlab="Date",ylab="Cases")
+grid(col="black")
+
+barplot(new_deaths ~Monthly,data=Monthly_new_deaths,main="Ohio's Monthly Mean Barplot of new_deaths",xlab="Date",ylab="Deaths")
+grid(col="black")
+```
+
+### Top Five Counties Based on Daily Totals for Previous 8 Days
+
+```{r}
+df <- subset(DF,date ==Sys.Date() -8 )
+Top <- df[order(df$new_cases,decreasing = TRUE),]
+Top5 <-head(Top,n=5)
+barplot(new_cases ~county,data=Top5,main="Top 5 Counties Ranked by single Day Cases",xlab="(For Sept 13, 2020)",ylab="Cases")
+grid(col="black")
+
+Topd <- df[order(df$new_deaths,decreasing = TRUE),]
+Top5d <-head(Topd,n=5)
+barplot(new_deaths ~county,data=Top5d,main="Top 5 Counties Ranked by single Day Deaths",xlab="(For Sept 13, 2020)",ylab="Cases")
+grid(col="black")
+```
+
+### Plot of Franklin Country Daily Cases and Deaths
+
+```{r}
+franklin <- subset(DF,DF$county =="Franklin")
+franklin$MA <- movingAverage(franklin$new_deaths,14,centered=TRUE)
+plot(franklin$date,franklin$new_cases,type="l",main="Franklin(Ohio) COVID-19 Cases by Date")
+grid(col="black")
+
+plot(franklin$date,franklin$new_deaths,type="l",main="Franklin(Ohio) COVID-19 Deaths by Date")
+lines(franklin$date,franklin$MA,col="red")
+grid(col="black")
+```
+
