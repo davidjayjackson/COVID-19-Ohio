@@ -1,7 +1,7 @@
 ---
 title: "Ohio COVID-19 Daily Report"
 author: "David Jackson"
-date: "12/16/2020"
+date: "12/17/2020"
 output: html_document
 ---
 
@@ -18,7 +18,7 @@ theme_set(theme_linedraw() + theme(panel.grid = element_line(linetype = 'dashed'
 ### State Data
 rm(list=ls())
 source("../DATA/movavg.R")
-db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVIDDB/NYTimes.sqlite3")
+db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVID-19-DB/NYTimes.sqlite3")
 df <- dbGetQuery(db,"select * from STATESDAILY")
 df <- df[order(df$date),]
 df <- subset(df,state =="Ohio" & date >="2020-03-10" )
