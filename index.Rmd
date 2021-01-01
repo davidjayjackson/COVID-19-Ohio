@@ -1,7 +1,7 @@
 ---
 title: "Ohio COVID-19 Daily Report"
 author: "David Jackson"
-date: "12/31/2020 11:35PM EST"
+date: "01/01/2021 2:00PM EST"
 output: html_document
 ---
 
@@ -23,9 +23,12 @@ df <- dbGetQuery(db,"select * from STATESDAILY")
 df <- df[order(df$date),]
 df <- subset(df,state =="Ohio" & date >="2020-03-10" )
 df$date <- as.Date(df$date)
-mean(df$new_cases)
-mean(df$new_deaths)
-mean(is.na(df$death_rate))
+mean(df$new_cases,na.rm=TRUE)
+mean(df$new_deaths,na.rm=TRUE)
+mean(df$death_rate,na.rm=TRUE)
+##
+sum(df$new_cases,na.rm=TRUE)
+sum(df$new_deaths,na.rm=TRUE)
 ## County Data
 ## County Data
 DF <- dbGetQuery(db,"select date,state,county,new_cases,new_deaths from  COUNTYDAILY where state='Ohio'")
