@@ -1,0 +1,54 @@
+---
+title: "Ohio COVID-19 Vaccine Rollout"
+author: "IllicitDavid Jackson"
+date: "2/3/2021 9:50 PM/EST"
+output: 
+  html_document: 
+    fig_width: 9
+    fig_height: 7
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(scales)
+library(plotly)
+library(RSQLite)
+library(dplyr)
+theme_set(theme_linedraw() + theme(panel.grid = element_line(linetype = 'dashed')))
+```
+
+## Ohio COVID Vaccine Rollout
+#### Source: John Hopkins Uni.
+
+```{r}
+### State Data
+rm(list=ls())
+source("../DATA/movavg.R")
+db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVID-19-DB/NYTimes.sqlite3")
+df <- dbGetQuery(db,"select * from usvaccine")
+df <- df[order(df$date),]
+df <- subset(df,Province_State =="Ohio" )
+df$date <- as.Date(df$date,format="%m-%d-%Y")
+```
+```{r}
+buckeye <- df %>% select(date,doses_admin_total,
+                           doses_admin_unknown,people_total)
+```
+
+### doses_admin_total
+
+```{r}
+p1 <- buckeye %>% ggplot() + geom_area(aes(x=date,y=doses_admin_total,fill="red")) +
+  scale_y_continuous(labels=comma) +
+  labs(title="doses_admin_total")
+ggplotly(p1)
+```
+### people_total
+
+```{r}
+p2 <- buckeye %>% ggplot() + geom_area(aes(x=date,y=people_total,fill="red")) +
+  scale_y_continuous(labels=comma) +
+  labs(title="people_total")
+ggplotly(p2)
+```
