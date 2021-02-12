@@ -45,3 +45,20 @@ ggplot(df) + geom_line(aes(x=date,y=mad28)) +
 ggplot(df) + geom_smooth(aes(x=date,y=new_deaths),span=0.25) +
   labs(title="Ohio Deaths: Loess: Span=0.25") 
   
+
+### Benford's Analysis
+library(benford.analysis)
+cases <- df %>% dplyr::select(new_cases)
+deaths <- df %>% dplyr::select(new_deaths)
+##
+bl_cases <- benford(cases$new_cases,1)
+plot(bl_cases)
+#
+bl_cases2 <- benford(cases$new_cases,2)
+plot(bl_cases2)
+## Deaths
+bl_deaths <- benford(deaths$new_deaths,1)
+plot(bl_deaths)
+#
+bl_deaths2 <- benford(deaths$new_deaths,2)
+plot(bl_deaths2)
