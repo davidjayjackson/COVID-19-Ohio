@@ -1,72 +1,70 @@
 ---
 title: "Ohio COVID-19 Daily Report"
 author: "David Jackson"
-date: "02/12/2021 11:45 PM/EST"
+date: "02/13/2021 4:30 PM/EST"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE,message = FALSE,error = FALSE)
 library(ggplot2)
 library(scales)
 library(RSQLite)
 library(dplyr)
+library(pracma)
 theme_set(theme_linedraw() + theme(panel.grid = element_line(linetype = 'dashed')))
 ```
 
 ```{r}
 ### State Data
 rm(list=ls())
-source("../DATA/movavg.R")
 db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVID-19-DB/NYTimes.sqlite3")
 df <- dbGetQuery(db,"select * from STATESDAILY")
 df <- df[order(df$date),]
 df <- subset(df,state =="Ohio" & date >="2020-03-10" )
 df$date <- as.Date(df$date)
-mean(df$new_cases,na.rm=TRUE)
-mean(df$new_deaths,na.rm=TRUE)
-mean(df$death_rate,na.rm=TRUE)
-##
+
 sum(df$new_cases,na.rm=TRUE)
 sum(df$new_deaths,na.rm=TRUE)
-## County Data
 ## County Data
 DF <- dbGetQuery(db,"select date,state,county,new_cases,new_deaths from  COUNTYDAILY where state='Ohio'")
 DF$date <- as.Date(DF$date)
 str(DF$date)
 ```
-```{r}
-### Fix Numbers for Nov. 26 - 27 
-# df$new_cases <-ifelse(df$date =="2020-11-26",mean(df$new_cases),df$new_cases)
-# df$new_deaths <-ifelse(df$date =="2020-11-26",mean(df$new_deaths),df$new_deaths)
-# df$new_cases <-ifelse(df$date =="2020-11-27",mean(df$new_cases),df$new_cases)
-# df$new_deaths <-ifelse(df$date =="2020-11-27",mean(df$new_deaths),df$new_deaths)
-```
+
+## Big New's About Ohio's Covid-19 Deaths.(2021-02-12)
+* "Ohio health dept. to restructure after 4K unreported deaths"
+* Source: https://wpta21.com/2021/02/12/governor-expected-to-discuss-underreported-covid-19-deaths/
+* Summary: Ohio "un·der·re·ported" Covid-19 Deaths  by as much  4,000
+* Thursday’s daily coronavirus death toll showed more than 720 deaths, of which 650 come from previously unreported deaths, GOP Gov. Mike DeWine said.(2021-02-11)
 
 #### Mortality Rate by Date
 
 ```{r}
 ggplot(df) + geom_line(aes(x=date,y=death_rate)) +
   scale_y_continuous(labels=percent) +
-  geom_hline(yintercept = 0.025,col="red")
+  geom_hline(yintercept = 0.025,col="red") +
+  ylim(0,0.3)
 
 ```
 
-
-
-
 #### Daily COVID19 Cases and Deaths
 
-
 ```{r}
-US <- subset(df,date >="2020-04-01")
-ggplot(US,aes(x=date,y=new_cases)) + geom_line() +
-  geom_smooth(span=0.25,se=FALSE) +
-  labs(title="Ohio Daily COVID19 Cases by Date")
 
-ggplot(US,aes(x=date,y=new_deaths)) + geom_line() +
-  geom_smooth(span=0.25,se=FALSE) +
-  labs(title="Ohio Daily COVID19 Deaths by Date")
+US <- subset(df,date >="2020-04-01")
+US$MAC <- movavg(US$new_cases,28,type="e")
+US$MAD <- movavg(US$new_deaths,28,type="e")
+
+ggplot(US,aes(x=date,y=MAC)) + geom_area() +
+    labs(title="Ohio Daily COVID19 Cases by Date",
+         subtitle = "(28 Day Moving Average)") 
+  
+
+ggplot(US,aes(x=date,y=MAD)) + geom_area() +
+    labs(title="Ohio Daily COVID19 Deaths by Date",
+         subtitle = "(28 Day Moving Average)") +
+  ylim(0,100)
 ```
 
 #### Weekly and Monthly Cases and Deaths
@@ -129,5 +127,5 @@ ggplot(franklin,aes(x=date,y=new_cases)) + geom_line() +
 franklin <- subset(DF,DF$county =="Franklin")
 ggplot(franklin,aes(x=date,y=new_deaths)) + geom_line() +
   geom_smooth(span=0.25) +
-  labs(title="Franklin County Deaths by Date")
+  labs(title="Franklin County Deaths by Date") + ylim(0,20)
 ```
