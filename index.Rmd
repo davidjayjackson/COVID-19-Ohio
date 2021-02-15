@@ -1,7 +1,7 @@
 ---
 title: "Ohio COVID-19 Daily Report"
 author: "David Jackson"
-date: "02/13/2021 4:30 PM/EST"
+date: "02/14/2021 2:40 PM/EST"
 output: html_document
 ---
 
@@ -37,6 +37,7 @@ str(DF$date)
 * Source: https://wpta21.com/2021/02/12/governor-expected-to-discuss-underreported-covid-19-deaths/
 * Summary: Ohio "un·der·re·ported" Covid-19 Deaths  by as much  4,000
 * Thursday’s daily coronavirus death toll showed more than 720 deaths, of which 650 come from previously unreported deaths, GOP Gov. Mike DeWine said.(2021-02-11)
+* "The Health Department said that “process issues affecting the reconciliation and reporting of these deaths” began in October, with most occurring in November and December"
 
 #### Mortality Rate by Date
 
@@ -51,19 +52,22 @@ ggplot(df) + geom_line(aes(x=date,y=death_rate)) +
 #### Daily COVID19 Cases and Deaths
 
 ```{r}
+# US$new_deaths <- ifelse(US$date =="2021-02-11",mean(US$new_deaths),US$new_deaths)
+# US$new_deaths <- ifelse(US$date =="2021-02-12",mean(US$new_deaths),US$new_deaths)
+# US$new_deaths <- ifelse(US$date =="2021-02-13",mean(US$new_deaths),US$new_deaths)
+US <- df %>% filter(date >="2020-04-01")
 
-US <- subset(df,date >="2020-04-01")
-US$MAC <- movavg(US$new_cases,28,type="e")
-US$MAD <- movavg(US$new_deaths,28,type="e")
+US$MAC <- movavg(US$new_cases,60,type="e")
+US$MAD <- movavg(US$new_deaths,60,type="e")
 
-ggplot(US,aes(x=date,y=MAC)) + geom_area() +
+ggplot(US,aes(x=date,y=MAC)) + geom_col() +
     labs(title="Ohio Daily COVID19 Cases by Date",
-         subtitle = "(28 Day Moving Average)") 
+         subtitle = "(60 Day Moving Average)") 
   
 
-ggplot(US,aes(x=date,y=MAD)) + geom_area() +
+ggplot(US,aes(x=date,y=MAD)) + geom_col() +
     labs(title="Ohio Daily COVID19 Deaths by Date",
-         subtitle = "(28 Day Moving Average)") +
+         subtitle = "(60 Day Moving Average/ y-limit:0,100)") +
   ylim(0,100)
 ```
 
@@ -86,7 +90,8 @@ ggplot(Weekly_new_cases,aes(x=Weekly,y=new_cases)) + geom_col() +
   geom_smooth(span=0.25,se=FALSE) + labs(title="Weekly COVID19 Cases")
 
 ggplot(Weekly_new_deaths,aes(x=Weekly,y=new_deaths)) + geom_col() +
-  geom_smooth(span=0.25,se=FALSE) + labs(title="Weekly COVID19 Deaths")
+  geom_smooth(span=0.25,se=FALSE) + labs(title="Weekly COVID19 Deaths") +
+  ylim(0,1000)
 ```
 ```{r}
 monthly_new_cases <- aggregate(new_cases~Monthly,US,FUN=sum)
