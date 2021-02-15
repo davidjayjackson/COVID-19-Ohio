@@ -1,7 +1,7 @@
 ---
 title: "Ohio COVID-19 Daily Report"
 author: "David Jackson"
-date: "02/14/2021 2:40 PM/EST"
+date: "02/15/2021 12:40 PM/EST"
 output: html_document
 ---
 
@@ -52,11 +52,9 @@ ggplot(df) + geom_line(aes(x=date,y=death_rate)) +
 #### Daily COVID19 Cases and Deaths
 
 ```{r}
-# US$new_deaths <- ifelse(US$date =="2021-02-11",mean(US$new_deaths),US$new_deaths)
-# US$new_deaths <- ifelse(US$date =="2021-02-12",mean(US$new_deaths),US$new_deaths)
-# US$new_deaths <- ifelse(US$date =="2021-02-13",mean(US$new_deaths),US$new_deaths)
-US <- df %>% filter(date >="2020-04-01")
 
+US <- df %>% filter(date >="2020-04-01")
+Trend <- US
 US$MAC <- movavg(US$new_cases,60,type="e")
 US$MAD <- movavg(US$new_deaths,60,type="e")
 
