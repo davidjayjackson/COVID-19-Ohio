@@ -1,7 +1,7 @@
 ---
 title: "Ohio COVID-19 Daily Report"
 author: "David Jackson"
-date: "03/02/2021 12:30 PM/EST"
+date: "03/03/2021 10:55 AM/EST"
 output: html_document
 ---
 
@@ -11,7 +11,7 @@ library(ggplot2)
 library(scales)
 library(RSQLite)
 library(dplyr)
-library(pracma)
+library(forecast)
 theme_set(theme_linedraw() + theme(panel.grid = element_line(linetype = 'dashed')))
 ```
 
@@ -55,17 +55,17 @@ ggplot(df) + geom_line(aes(x=date,y=death_rate)) +
 
 US <- df %>% filter(date >="2020-04-01")
 Trend <- US
-US$MAC <- movavg(US$new_cases,60,type="e")
-US$MAD <- movavg(US$new_deaths,60,type="e")
+US$MAC <- ma(US$new_cases,14,centre=TRUE)
+US$MAD <- ma(US$new_deaths,14,centre=TRUE)
 
 ggplot(US,aes(x=date,y=MAC)) + geom_col() +
     labs(title="Ohio Daily COVID19 Cases by Date",
-         subtitle = "(60 Day Moving Average)") 
+         subtitle = "(14 Day Moving Average)") 
   
 
 ggplot(US,aes(x=date,y=MAD)) + geom_col() +
     labs(title="Ohio Daily COVID19 Deaths by Date",
-         subtitle = "(60 Day Moving Average/ y-limit:0,100)") +
+         subtitle = "(14 Day Moving Average/ y-limit:0,100)") +
   ylim(0,100)
 ```
 
