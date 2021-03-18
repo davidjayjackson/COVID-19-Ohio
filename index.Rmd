@@ -1,7 +1,7 @@
 ---
 title: "Ohio COVID-19 Daily Report"
 author: "David Jackson"
-date: "03/17/2021 11:10 AM/EDT"
+date: "03/18/2021 12:05 PM/EDT"
 output: html_document
 ---
 
@@ -132,3 +132,12 @@ ggplot(franklin,aes(x=date,y=new_deaths)) + geom_line() +
   geom_smooth(span=0.25) +
   labs(title="Franklin County Deaths by Date") + ylim(0,20)
 ```
+#### Fixed 4th quarter numbers (do to under counting of deaths)
+
+```{r}
+df$Ajusted <-  ifelse(df$date >="2020-10-01" & df$date <="2020-12-31",df$new_deaths + 40,df$new_deaths)
+ggplot(df) + geom_line(aes(x=date,y=new_deaths,col="Deaths")) +
+  geom_line(aes(x=date,y=Ajusted,col="Adjusted")) +
+  ylim(0,200)
+```
+
