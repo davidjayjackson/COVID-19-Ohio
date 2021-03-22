@@ -108,15 +108,18 @@ ggplot(monthly_new_deaths,aes(x=Monthly,y=new_deaths)) + geom_col() +
 ```{r}
 df <- subset(DF,date ==Sys.Date() -8 )
 Top <- df[order(df$new_cases,decreasing = TRUE),]
-Top5 <-head(Top,n=5)
+Top5 <-top_n(df,5,new_cases)
 ggplot(Top5,aes(x=new_cases,y=county)) +
   geom_col() + coord_flip() +
   labs(title="Top 5 Counties by Total Cases for last 7 day.")
 
-Top5 <-head(Top,n=5)
-ggplot(Top5,aes(x=new_deaths,y=county)) +
-  geom_col() + coord_flip() +
-  labs(title="Top 5 Counties by Total Deaths for last 7 day.")
+# df <- subset(DF,date ==Sys.Date() -8 )
+# Top <- df[order(df$new_deaths,decreasing = TRUE),]
+# Top5 <-top_n(df,5,new_deaths)
+# ggplot(Top5,aes(x=new_deaths,y=county)) +
+#   geom_col() + coord_flip() +
+#   labs(title="Top 5 Counties by Total Deaths for last 7 day.")
+
 ```
 
 ### Plot of Franklin Country Daily Cases and Deaths
