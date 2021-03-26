@@ -1,7 +1,7 @@
 ---
 title: "Ohio COVID-19 Daily Report"
 author: "David Jackson"
-date: "03/25/2021 1:50 PM/EDT"
+date: "03/26/2021 12:30 PM/EDT"
 output: html_document
 ---
 
@@ -14,6 +14,13 @@ library(dplyr)
 library(forecast)
 theme_set(theme_linedraw() + theme(panel.grid = element_line(linetype = 'dashed')))
 ```
+## Big New's About Ohio's Covid-19 Deaths.(2021-02-12)
+* "Ohio health dept. to restructure after 4K unreported deaths"
+* Source: https://wpta21.com/2021/02/12/governor-expected-to-discuss-underreported-covid-19-deaths/
+* Summary: Ohio "un·der·re·ported" Covid-19 Deaths  by as much  4,000
+* Thursday’s daily coronavirus death toll showed more than 720 deaths, of which 650 come from previously unreported deaths, GOP Gov. Mike DeWine said.(2021-02-11)
+* "The Health Department said that “process issues affecting the reconciliation and reporting of these deaths” began in October, with most occurring in November and December"
+
 
 ```{r}
 ### State Data
@@ -25,32 +32,33 @@ df <- subset(df,state =="Ohio" & date >="2020-03-10" )
 df$date <- as.Date(df$date)
 ```
 ```{r}
-# df$new_deaths <-  ifelse(df$date >="2020-10-01" & df$date <="2020-12-31",df$new_deaths + 40,df$new_deaths)
-
+df$new_deaths <-  ifelse(df$date >="2020-10-01" & df$date <="2020-12-31",df$new_deaths + 30,df$new_deaths)
 ```
 ```{r}
+
+df$new_deaths <-  ifelse(df$date =="2021-02-12",800,df$new_deaths)
+df$new_deaths <-  ifelse(df$date =="2021-02-13",800,df$new_deaths)
+
+```
+
+```{r}
 sum(df$new_cases,na.rm=TRUE)
-sum(df$new_deaths,na.rm=TRUE) - 4000
+sum(df$new_deaths,na.rm=TRUE)
 ## County Data
 DF <- dbGetQuery(db,"select date,state,county,new_cases,new_deaths from  COUNTYDAILY where state='Ohio'")
 DF$date <- as.Date(DF$date)
 # str(DF$date)
 ```
 
-## Big New's About Ohio's Covid-19 Deaths.(2021-02-12)
-* "Ohio health dept. to restructure after 4K unreported deaths"
-* Source: https://wpta21.com/2021/02/12/governor-expected-to-discuss-underreported-covid-19-deaths/
-* Summary: Ohio "un·der·re·ported" Covid-19 Deaths  by as much  4,000
-* Thursday’s daily coronavirus death toll showed more than 720 deaths, of which 650 come from previously unreported deaths, GOP Gov. Mike DeWine said.(2021-02-11)
-* "The Health Department said that “process issues affecting the reconciliation and reporting of these deaths” began in October, with most occurring in November and December"
+
 
 #### Mortality Rate by Date
 
 ```{r}
-ggplot(df) + geom_line(aes(x=date,y=death_rate)) +
-  scale_y_continuous(labels=percent) +
-  geom_hline(yintercept = 0.025,col="red") +
-  ylim(0,0.3)
+# ggplot(df) + geom_line(aes(x=date,y=death_rate)) +
+#   scale_y_continuous(labels=percent) +
+#   geom_hline(yintercept = 0.025,col="red") +
+#   ylim(0,0.3)
 
 ```
 
@@ -60,17 +68,17 @@ ggplot(df) + geom_line(aes(x=date,y=death_rate)) +
 
 US <- df %>% filter(date >="2020-04-01")
 Trend <- US
-US$MAC <- ma(US$new_cases,14,centre=TRUE)
-US$MAD <- ma(US$new_deaths,14,centre=TRUE)
+US$MAC <- ma(US$new_cases,28,centre=TRUE)
+US$MAD <- ma(US$new_deaths,28,centre=TRUE)
 
 ggplot(US,aes(x=date,y=MAC)) + geom_col() +
     labs(title="Ohio Daily COVID19 Cases by Date",
-         subtitle = "(14 Day Moving Average)") 
+         subtitle = "(28 Day Moving Average)") 
   
 
 ggplot(US,aes(x=date,y=MAD)) + geom_col() +
     labs(title="Ohio Daily COVID19 Deaths by Date",
-         subtitle = "(14 Day Moving Average/ y-limit:0,100)") +
+         subtitle = "(28 Day Moving Average/ y-limit:0,100)") +
   ylim(0,100)
 ```
 
