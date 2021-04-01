@@ -17,11 +17,17 @@ theme_set(theme_linedraw() + theme(panel.grid = element_line(linetype = 'dashed'
 ## Big New's About Ohio's Covid-19 Deaths.(2021-02-12)
 * "Ohio health dept. to restructure after 4K unreported deaths"
 * Source: https://wpta21.com/2021/02/12/governor-expected-to-discuss-underreported-covid-19-deaths/
-* Summary: Ohio "un·der·re·ported" Covid-19 Deaths  by as much  4,000
-* Thursday’s daily coronavirus death toll showed more than 720 deaths, of which 650 come from previously unreported deaths, GOP Gov. Mike DeWine said.(2021-02-11)
-* "The Health Department said that “process issues affecting the reconciliation and reporting of these deaths” began in October, with most occurring in November and December"
+Summary: Ohio "un·der·re·ported" Covid-19 Deaths  by as much  4,000
+Thursday’s daily coronavirus death toll showed more than 720 deaths, of which 650 come from previously unreported deaths, GOP Gov. Mike DeWine said.(2021-02-11)
+"The Health Department said that “process issues affecting the reconciliation and reporting of these deaths” began in October, with most occurring in November and December"
 
+* lwaananenjones Github: Ohio (2021-03-29)
+That's correct — Ohio is no longer announcing deaths on a daily schedule. At the beginning of March, the state transitioned to a different system for tallying deaths based on death certificates. Here is a portion from the state's March 2 press release:
 
+* In addition, mortality data will no longer be reported daily. Updated death certificate data is typically sent to the Ohio Department of Health twice per week, and may lag – often 1-2 months, but up to 6 months. On dates that data is not reported to the Ohio Department of Health, deaths will remain static on the COVID-19 dashboards. For the foreseeable future, mortality information will not be updated on specific days of the week. Case and other data will continue to be reported through ODRS on its current schedule.
+
+* Added 40 Deaths to new_deaths1 for the period of 2020-10-01 - 2020-12-31
+* Estimated daily deaths for Feb. 12 to be 800, and Feb. 13 to be 850
 ```{r}
 ### State Data
 rm(list=ls())
