@@ -1,7 +1,7 @@
 ---
 title: "Ohio COVID-19 Daily Report"
 author: "David Jackson"
-date: "04/06/2021 4:45 PM/EDT"
+date: "04/07/2021 1:30 PM/EDT"
 output: html_document
 ---
 
@@ -76,14 +76,14 @@ DF$date <- as.Date(DF$date)
 df$MAC <- ma(df$new_cases,21,centre=TRUE)
 df$MAD <- ma(df$new_deaths1,21,centre=TRUE)
 
-ggplot(df,aes(x=date,y=MAC)) + geom_col(lwd=1,col="red") +
+ggplot(df,aes(x=date,y=MAC)) + geom_area(lwd=1,col="red") +
     labs(title="Ohio Daily COVID19 Cases by Date",
-         subtitle = "(14 Day Moving Average)") 
+         subtitle = "(21 Day Moving Average)") 
   
 
-ggplot(df,aes(x=date,y=MAD)) + geom_col(lwd=1,col="red") +
+ggplot(df,aes(x=date,y=MAD)) + geom_area(lwd=1,col="red") +
     labs(title="Ohio Daily COVID19 Deaths by Date",
-         subtitle = "(14 Day Moving Average/ y-limit:0,100)") +
+         subtitle = "(21 Day Moving Average/ y-limit:0,100)") +
   ylim(0,150)
 ```
 
@@ -104,10 +104,10 @@ Weekly_new_deaths <- aggregate(new_deaths~Weekly,df,FUN=sum)
 
 ```
 ```{r}
-ggplot(Weekly_new_cases,aes(x=Weekly,y=new_cases)) + geom_col() +
+ggplot(Weekly_new_cases,aes(x=Weekly,y=new_cases)) + geom_area() +
   geom_smooth(span=0.25,se=FALSE) + labs(title="Weekly COVID19 Cases")
 
-ggplot(Weekly_new_deaths,aes(x=Weekly,y=new_deaths)) + geom_col() +
+ggplot(Weekly_new_deaths,aes(x=Weekly,y=new_deaths)) + geom_area() +
   geom_smooth(span=0.25,se=FALSE) + labs(title="Weekly COVID19 Deaths") +
   ylim(0,1000)
 ```
