@@ -1,0 +1,84 @@
+---
+title: "Ohio + dlookr Package"
+author: "David Jackson"
+date: "04/02/2021 12:10 PM/EDT"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(scales)
+library(dplyr)
+library(tidyr)
+library(dlookr)
+library(flextable)
+```
+
+## Read In Ohio Date with NA for Oct - December 2020
+* Youtube: https://youtu.be/M7eNYbd4n1Y
+
+#### Plots of Ohio data with and without missing data
+
+```{r}
+df <- read.csv("./Ohio_before.csv")
+df$Date <- as.Date(df$Date)
+```
+```{r}
+ggplot(df) + geom_line(aes(x=Date,y=Deaths,col="Deaths")) +
+  geom_line(aes(x=Date,y=Deaths1,col="NA")) + ylim(0,200) +
+  labs(title="Plot Of Ohio Deaths with/out Bad Deaths")
+```
+
+
+## Begin dlookr Package Analysis
+#### diagnose
+
+```{r}
+df %>% diagnose() %>% flextable()
+```
+
+#### diagnose_category
+
+```{r}
+df %>% diagnose_category() %>% flextable()
+```
+
+#### diagnose_numeric
+
+```{r}
+df %>% diagnose_numeric() %>% flextable()
+```
+
+#### diagnose_outlier
+
+```{r}
+df %>% diagnose_outlier() %>% flextable()
+```
+```{r}
+plot_outlier(df)
+```
+```{r}
+plot_na_pareto(df)
+
+```
+```{r}
+plot(imputate_na(df, xvar = Deaths1, yvar = Deaths, method = "mean"))
+```
+```{r}
+plot(imputate_na(df, xvar = Deaths1, yvar = Deaths, method = "median"))
+```
+```{r}
+plot(imputate_na(df, xvar = Deaths1, yvar = Deaths, method = "mode"))
+
+```
+### Plot Imputed valuse using method ="Mode"
+
+```{r}
+set.seed(999)
+df$mode <- imputate_na(df, xvar = Deaths1, yvar = Deaths1, method = "mode")
+```
+```{r}
+ggplot(df) + geom_line(aes(x=Date,y=mode,col="Deaths")) 
+  
+```
