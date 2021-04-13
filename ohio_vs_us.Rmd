@@ -119,15 +119,62 @@ ggplot(buckeye) + geom_line(aes(x=date,y=mean_cases,col="Mean Cases")) +
 ```
 
 ```{r}
-ggplot(buckeye) + geom_line(aes(x=date,y=median_deaths,col="Median Deaths")) + 
-  labs(title = "Ohio Daily Median Deaths",y="Median Deaths") +
+ggplot(buckeye) + geom_line(aes(x=date,y=median_cases,col="Median Cases")) + 
+  labs(title = "Ohio Daily Median Cases",y="Median Deaths") +
   scale_y_continuous(labels = comma) + ylim(0,250) +
-  geom_line(data=us_no_ohio,aes(x=date,y=median_deaths,col="US Median Cases"))
+  geom_line(data=us_no_ohio,aes(x=date,y=median_cases,col="US Median Cases"))
 ```
+
+### Ohio Daily Mean Deaths vs US
 
 ```{r}
 ggplot(buckeye) + geom_line(aes(x=date,y=mean_deaths,col="Mean Deaths")) + 
   labs(title = "Ohio Daily Mean Deaths",y="Mean Deaths") +
   scale_y_continuous(labels = comma) + ylim(0,500) +
   geom_line(data=us_no_ohio,aes(x=date,y=mean_deaths,col="US Mean Cases"))
+```
+
+### A Little Bit of R, A Little Bit of dplyr and a Little bit of ggplot2
+#### US Without Ohio
+
+```{r}
+options(digits=4)
+no_ohio %>% select(new_cases,new_deaths) %>% diagnose_numeric()
+```
+#### Ohio Only
+
+```{r}
+OSU %>% select(new_cases,new_deaths) %>% diagnose_numeric()
+```
+
+### Density Plots and Hisograms
+
+```{r}
+no_ohio %>% select(date,new_cases) %>% filter(new_cases >0) %>% ggplot(aes(x=new_cases)) +
+  geom_density() + scale_y_continuous(labels = percent) + scale_x_log10() +
+  labs(title="US W/o OHio Density Plot of Daily Cases")
+```
+
+```{r}
+OSU %>% select(date,new_cases) %>% filter(new_cases >0) %>% ggplot(aes(x=new_cases)) +
+  geom_density() + scale_y_continuous(labels = percent) + scale_x_log10() +
+  labs(title="Ohio Density Plot of Daily Cases")
+  
+```
+
+### Stacked Density Plot US vs Ohio
+
+```{r}
+ggplot() + geom_density(data=no_ohio,aes(x=new_cases,fill="US Daily Cases")) +
+  geom_density(data=OSU,aes(x=new_cases,fill="Ohio Daily Cases"),alpha=0.5) +
+  scale_x_log10(labels = comma) + scale_y_continuous(labels = percent) +
+   labs(title="Daily Cases Density Plot of US (w/o Ohio)  vs Ohio",
+        x="Daily Cases")
+```
+```{r}
+ggplot() + geom_density(data=no_ohio,aes(x=new_deaths,fill="US Daily Deaths")) +
+  geom_density(data=OSU,aes(x=new_deaths,fill="Ohio Daily Deaths"),alpha=0.5) +
+  scale_x_log10(labels = comma) + scale_y_continuous(labels = percent) +
+   labs(title="Daily Deaths: Density Plot of US (w/o Ohio)  vs Ohio",
+        x="Daily Cases")
 ```
