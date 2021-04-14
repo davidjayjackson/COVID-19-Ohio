@@ -1,7 +1,7 @@
 ---
 title: "Ohio COVID-19 Daily Report"
 author: "David Jackson"
-date: "04/13/2021 1:05 PM/EDT"
+date: "04/14/2021 1:20 PM/EDT"
 output: html_document
 ---
 
@@ -158,6 +158,20 @@ ggplot(monthly_new_deaths,aes(x=Monthly,y=new_deaths)) + geom_col() +
 #   labs(title="Franklin County Deaths by Date") + ylim(0,20)
 ```
 
+### Cases and Deaths Per 100,000 Population
+
+```{r}
+df$CPC <- (df$new_cases/116900000)*100000
+ggplot(df) + geom_line(aes(x=date,y=CPC)) +
+  scale_y_continuous(labels= comma) +
+  labs(title="Ohio Case Per 100,000")
+```
+```{r}
+df$DPC <- (df$new_deaths/116900000) *100000
+ggplot(df) + geom_line(aes(x=date,y=DPC)) +
+  scale_y_continuous(labels = comma) +
+  labs(title="Ohio Deaths Per 100,000") + theme_light()
+```
 
 
 
