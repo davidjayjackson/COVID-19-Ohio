@@ -1,33 +1,27 @@
 ---
-title: "Ohio COVID-19 Daily Report"
+title: "Ohio vs US Covid-19"
 author: "David Jackson"
-date: "04/16/2021 2:20 PM/EDT"
-output: html_document
+date: "4/20/2021 2:15 PM/EDT"
+output: 
+  html_document: 
+    fig_width: 9
+    fig_height: 7
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE,message = FALSE,error = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 library(scales)
-library(RSQLite)
 library(dplyr)
-library(forecast)
-theme_set(theme_linedraw() + theme(panel.grid = element_line(linetype = 'dashed')))
+library(tidyr)
+library(dlookr)
+library(flextable)
+library(RSQLite)
 ```
-## Big New's About Ohio's Covid-19 Deaths.(2021-02-12)
-* "Ohio health dept. to restructure after 4K unreported deaths"
-* Source: https://wpta21.com/2021/02/12/governor-expected-to-discuss-underreported-covid-19-deaths/
-Summary: Ohio "un·der·re·ported" Covid-19 Deaths  by as much  4,000
-Thursday’s daily coronavirus death toll showed more than 720 deaths, of which 650 come from previously unreported deaths, GOP Gov. Mike DeWine said.(2021-02-11)
-"The Health Department said that “process issues affecting the reconciliation and reporting of these deaths” began in October, with most occurring in November and December"
 
-* lwaananenjones Github: Ohio (2021-03-29)
-That's correct — Ohio is no longer announcing deaths on a daily schedule. At the beginning of March, the state transitioned to a different system for tallying deaths based on death certificates. Here is a portion from the state's March 2 press release:
+## Calculate Average Cases and Deaths for US
+Using the New York Times Daily States Numbers (Daily Average/Median)
 
-* In addition, mortality data will no longer be reported daily. Updated death certificate data is typically sent to the Ohio Department of Health twice per week, and may lag – often 1-2 months, but up to 6 months. On dates that data is not reported to the Ohio Department of Health, deaths will remain static on the COVID-19 dashboards. For the foreseeable future, mortality information will not be updated on specific days of the week. Case and other data will continue to be reported through ODRS on its current schedule.
-
-* Added 40 Deaths to new_deaths1 for the period of 2020-10-01 - 2020-12-31
-* Estimated daily deaths for Feb. 12 to be 800, and Feb. 13 to be 850
 ```{r}
 ### State Data
 rm(list=ls())
@@ -35,144 +29,153 @@ db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVID-19-DB/NYTimes.sqlite3"
 df <- dbGetQuery(db,"select * from STATESDAILY")
 df$date <- as.Date(df$date)
 df <- df[order(df$date),]
-df <- subset(df,state =="Ohio" & date >="2020-03-10" )
-df$TotalCases <- as.numeric(df$TotalCases)
-df$TotalDeaths <- as.numeric(df$TotalDeaths)
-df$new_cases <- as.numeric(df$new_cases)
-df$new_deaths <- as.numeric(df$new_deaths)
-```
-```{r}
-# Fix Fouth Quarter Deaths
-df <- dplyr::mutate(
-  df,new_deaths1 = dplyr::if_else(date >= "2020-10-01" & date <="2020-12-31",new_deaths + 40, new_deaths))
-
+no_ohio <- subset(df,state !="Ohio")
+us_no_ohio <- no_ohio %>% group_by(date) %>%
+  summarise( median_cases = median(new_cases),
+             mean_cases = mean(new_cases),
+             median_deaths = median(new_deaths),
+             mean_deaths = mean(new_deaths))
 ```
 
+### Plot Mean and Median Daily Cases and Cases for US
 
 ```{r}
-sum(df$new_cases,na.rm=TRUE)
-sum(df$new_deaths1,na.rm=TRUE)
-## County Data
-DF <- dbGetQuery(db,"select date,state,county,new_cases,new_deaths from  COUNTYDAILY where state='Ohio'")
-DF$date <- as.Date(DF$date)
-# str(DF$date)
+ggplot(us_no_ohio) + geom_line(aes(x=date,y=median_cases,col="Median Cases")) + geom_line(aes(x=date,y=mean_cases,col="Mean Cases")) +
+  labs(title = "US Daily Median/Mean Cases",y="Mean/Median Cases") +
+  scale_y_continuous(labels = comma)
 ```
 
-
-
-#### Mortality Rate by Date
+Plot Mean and Median Daily Deaths  for US
 
 ```{r}
-# ggplot(df) + geom_line(aes(x=date,y=death_rate)) +
-#   scale_y_continuous(labels=percent) +
-#   geom_hline(yintercept = 0.025,col="red") +
-#   ylim(0,0.3)
-
+ggplot(us_no_ohio) + geom_line(aes(x=date,y=median_deaths,col="Median Deaths")) + geom_line(aes(x=date,y=mean_deaths,col="Mean Deaths")) +
+  labs(title = "US Daily Median/Mean Deaths",y="Mean/Median Deaths") +
+  scale_y_continuous(labels = comma)
 ```
 
-#### Daily COVID19 Cases and Deaths
+### US vs Ohio Daily Cases vs US Median Cases
 
 ```{r}
-df$MAC <- ma(df$new_cases,21,centre=TRUE)
-df$MAD <- ma(df$new_deaths1,21,centre=TRUE)
-
-ggplot(df,aes(x=date,y=MAC)) + geom_area(lwd=1,col="red") +
-    labs(title="Ohio Daily COVID19 Cases by Date",
-         subtitle = "(21 Day Moving Average)") 
-  
-
-ggplot(df,aes(x=date,y=MAD)) + geom_area(lwd=1,col="red") +
-    labs(title="Ohio Daily COVID19 Deaths by Date",
-         subtitle = "(21 Day Moving Average/ y-limit:0,100)") +
-  ylim(0,150)
+ohio <- subset(df,state =="Ohio")
+ggplot(us_no_ohio) + geom_line(aes(x=date,y=median_cases,col="US Median ")) +
+  geom_line(data = ohio,aes(x=date,y=new_cases,col="Ohio Cases")) +
+  labs(title="US Median vs Ohio Cases")
 ```
 
-
-
-#### Weekly and Monthly Cases and Deaths
+### US vs Ohio Daily Cases vs US Mean Cases
 
 ```{r}
-df$Monthly <- as.Date(cut(df$date,
-  breaks = "month"))
-df$Weekly <- as.Date(cut(df$date,
-  breaks = "week",
-  start.on.monday = FALSE))
-```
-```{r}
-Weekly_new_cases <- aggregate(new_cases~Weekly,df,FUN=sum)
-Weekly_new_deaths <- aggregate(new_deaths~Weekly,df,FUN=sum)
 
-```
-```{r}
-ggplot(Weekly_new_cases,aes(x=Weekly,y=new_cases)) + geom_area() +
-  geom_smooth(span=0.25,se=FALSE) + labs(title="Weekly COVID19 Cases")
-
-ggplot(Weekly_new_deaths,aes(x=Weekly,y=new_deaths)) + geom_area() +
-  geom_smooth(span=0.25,se=FALSE) + labs(title="Weekly COVID19 Deaths") +
-  ylim(0,1000)
-```
-```{r}
-monthly_new_cases <- aggregate(new_cases~Monthly,df,FUN=sum)
-monthly_new_deaths <- aggregate(new_deaths~Monthly,df,FUN=sum)
-```
-```{r}
-ggplot(monthly_new_cases,aes(x=Monthly,y=new_cases)) + geom_col() +
-  labs(title="Monthly COVID19 Cases")
-
-ggplot(monthly_new_deaths,aes(x=Monthly,y=new_deaths)) + geom_col() +
-   labs(title="Monthly COVID19 Deaths")
-```
-
-### Top Five Counties Based on Daily Totals for Previous 8 Days
-
-```{r}
-# df <- subset(df,date ==Sys.Date() -8 )
-# Top <- df[order(df$new_cases,decreasing = TRUE),]
-# Top5 <-top_n(df,5,new_cases)
-# ggplot(Top5,aes(x=new_cases,y=county)) +
-#   geom_col() + coord_flip() +
-#   labs(title="Top 5 Counties by Total Cases for last 7 day.")
-# 
-# df <- subset(df,date ==Sys.Date() -8 )
-# Top <- df[order(df$new_cases,decreasing = TRUE),]
-# Top5 <-top_n(df,5,new_cases)
-# ggplot(Top5,aes(x=new_cases,y=county)) +
-#   geom_col() + coord_flip() +
-#   labs(title="Top 5 Counties by Total Cases for last 7 day.")
-
-
-
-```
-
-### Plot of Franklin Country Daily Cases and Deaths
-
-```{r}
-# df %>% filter(county =="Franklin") %>%
-# ggplot(aes(x=date,y=new_cases)) + geom_line() +
-#   geom_smooth(span=0.25) +
-#   labs(title="Franklin County Cases by Date")
-# 
-# df(county =="Franklin") %>%
-# ggplot(aes(x=date,y=new_deaths)) + geom_line() +
-#   geom_smooth(span=0.25) +
-#   labs(title="Franklin County Deaths by Date") + ylim(0,20)
-```
-
-### Cases and Deaths Per 100,000 Population
-
-```{r}
-df$CPC <- (df$new_cases/116900000)*100000
-ggplot(df) + geom_line(aes(x=date,y=CPC)) +
-  scale_y_continuous(labels= comma) +
-  labs(title="Ohio Case Per 100,000")
-```
-```{r}
-df$DPC <- (df$new_deaths/116900000) *100000
-ggplot(df) + geom_line(aes(x=date,y=DPC)) +
+ggplot(us_no_ohio) + geom_line(aes(x=date,y=mean_cases,col="US Mean ")) +
+  geom_line(data = ohio,aes(x=date,y=new_cases,col="Ohio Cases")) +
   scale_y_continuous(labels = comma) +
-  labs(title="Ohio Deaths Per 100,000") + theme_light()
-
+  labs(title="US Mean Cases vs Ohio Cases")
 ```
 
+### US vs Ohio Daily Deaths vs US Median Deaths
 
+```{r}
+ohio <- subset(df,state =="Ohio")
+ggplot(us_no_ohio) + geom_line(aes(x=date,y=median_deaths,col="US Median ")) +
+  geom_line(data = ohio,aes(x=date,y=new_deaths,col="Ohio Cases")) +
+  labs(title="US Median vs Ohio Deaths")
+```
 
+### US vs Ohio Daily Cases vs US Median Cases
+
+```{r}
+
+ggplot(us_no_ohio) + geom_line(aes(x=date,y=mean_deaths,col="US Mean ")) +
+  geom_line(data = ohio,aes(x=date,y=new_deaths,col="Ohio Deaths")) +
+  scale_y_continuous(labels = comma) +
+  labs(title="US Mean Deaths vs Ohio Deaths")
+```
+
+### Ohio Mean and Medians Cases and Deaths
+
+```{r}
+county <- dbGetQuery(db,"select * from STATESDAILY")
+county$date <- as.Date(county$date)
+county <- county[order(county$date),]
+OSU <- subset(county,state =="Ohio")
+```
+```{r}
+buckeye <- OSU %>% group_by(date) %>%
+  summarise( median_cases = median(new_cases),
+             mean_cases = mean(new_cases),
+             median_deaths = median(new_deaths),
+             mean_deaths = mean(new_deaths))
+```
+
+```{r}
+ggplot(buckeye) + geom_line(aes(x=date,y=median_cases,col="Median Cases")) + 
+  labs(title = "Ohio Daily Median Cases",y="Median Cases") +
+  scale_y_continuous(labels = comma) 
+```
+
+```{r}
+ggplot(buckeye) + geom_line(aes(x=date,y=mean_cases,col="Mean Cases")) + 
+  labs(title = "Ohio Daily Mean Cases",y="Mean Cases") +
+  scale_y_continuous(labels = comma) 
+```
+
+```{r}
+ggplot(buckeye) + geom_line(aes(x=date,y=median_cases,col="Median Cases")) + 
+  labs(title = "Ohio Daily Median Cases",y="Median Deaths") +
+  scale_y_continuous(labels = comma) + ylim(0,250) +
+  geom_line(data=us_no_ohio,aes(x=date,y=median_cases,col="US Median Cases"))
+```
+
+### Ohio Daily Mean Deaths vs US
+
+```{r}
+ggplot(buckeye) + geom_line(aes(x=date,y=mean_deaths,col="Mean Deaths")) + 
+  labs(title = "Ohio Daily Mean Deaths",y="Mean Deaths") +
+  scale_y_continuous(labels = comma) + ylim(0,500) +
+  geom_line(data=us_no_ohio,aes(x=date,y=mean_deaths,col="US Mean Cases"))
+```
+
+### A Little Bit of R, A Little Bit of dplyr and a Little bit of ggplot2
+#### US Without Ohio
+
+```{r}
+options(digits=4)
+no_ohio %>% select(new_cases,new_deaths) %>% diagnose_numeric()
+```
+#### Ohio Only
+
+```{r}
+OSU %>% select(new_cases,new_deaths) %>% diagnose_numeric()
+```
+
+### Density Plots and Hisograms
+
+```{r}
+no_ohio %>% select(date,new_cases) %>% filter(new_cases >0) %>% ggplot(aes(x=new_cases)) +
+  geom_density() + scale_y_continuous(labels = percent) + scale_x_log10() +
+  labs(title="US W/o OHio Density Plot of Daily Cases")
+```
+
+```{r}
+OSU %>% select(date,new_cases) %>% filter(new_cases >0) %>% ggplot(aes(x=new_cases)) +
+  geom_density() + scale_y_continuous(labels = percent) + scale_x_log10() +
+  labs(title="Ohio Density Plot of Daily Cases")
+  
+```
+
+### Stacked Density Plot US vs Ohio
+
+```{r}
+ggplot() + geom_density(data=no_ohio,aes(x=new_cases,fill="US Daily Cases")) +
+  geom_density(data=OSU,aes(x=new_cases,fill="Ohio Daily Cases"),alpha=0.5) +
+  scale_x_log10(labels = comma) + scale_y_continuous(labels = percent) +
+   labs(title="Daily Cases Density Plot of US (w/o Ohio)  vs Ohio",
+        x="Daily Cases")
+```
+```{r}
+ggplot() + geom_density(data=no_ohio,aes(x=new_deaths,fill="US Daily Deaths")) +
+  geom_density(data=OSU,aes(x=new_deaths,fill="Ohio Daily Deaths"),alpha=0.5) +
+  scale_x_log10(labels = comma) + scale_y_continuous(labels = percent) +
+   labs(title="Daily Deaths: Density Plot of US (w/o Ohio)  vs Ohio",
+        x="Daily Cases")
+```
