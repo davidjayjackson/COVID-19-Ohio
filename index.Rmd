@@ -1,11 +1,11 @@
 ---
-title: "Ohio vs US Covid-19"
+title: "Ohio Covid-19 Report"
 author: "David Jackson"
-date: "4/20/2021 2:15 PM/EDT"
+date: "4/22/2021 7:20 PM/EDT"
 output: 
   html_document: 
     fig_width: 9
-    fig_height: 7
+    fig_height: 6
 ---
 
 ```{r setup, include=FALSE}
@@ -13,169 +13,73 @@ knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 library(scales)
 library(dplyr)
-library(tidyr)
 library(dlookr)
+library(forecast)
 library(flextable)
 library(RSQLite)
 ```
 
-## Calculate Average Cases and Deaths for US
-Using the New York Times Daily States Numbers (Daily Average/Median)
+## Adjusted Numbers for Ohio
 
 ```{r}
-### State Data
 rm(list=ls())
 db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVID-19-DB/NYTimes.sqlite3")
-df <- dbGetQuery(db,"select * from STATESDAILY")
+df <- dbGetQuery(db,"select date,new_cases,new_deaths from STATESDAILY where state = 'Ohio'")
 df$date <- as.Date(df$date)
 df <- df[order(df$date),]
-no_ohio <- subset(df,state !="Ohio")
-us_no_ohio <- no_ohio %>% group_by(date) %>%
-  summarise( median_cases = median(new_cases),
-             mean_cases = mean(new_cases),
-             median_deaths = median(new_deaths),
-             mean_deaths = mean(new_deaths))
 ```
 
-### Plot Mean and Median Daily Cases and Cases for US
+### Basic Plots: Cases 
 
 ```{r}
-ggplot(us_no_ohio) + geom_line(aes(x=date,y=median_cases,col="Median Cases")) + geom_line(aes(x=date,y=mean_cases,col="Mean Cases")) +
-  labs(title = "US Daily Median/Mean Cases",y="Mean/Median Cases") +
-  scale_y_continuous(labels = comma)
-```
-
-Plot Mean and Median Daily Deaths  for US
-
-```{r}
-ggplot(us_no_ohio) + geom_line(aes(x=date,y=median_deaths,col="Median Deaths")) + geom_line(aes(x=date,y=mean_deaths,col="Mean Deaths")) +
-  labs(title = "US Daily Median/Mean Deaths",y="Mean/Median Deaths") +
-  scale_y_continuous(labels = comma)
-```
-
-### US vs Ohio Daily Cases vs US Median Cases
-
-```{r}
-ohio <- subset(df,state =="Ohio")
-ggplot(us_no_ohio) + geom_line(aes(x=date,y=median_cases,col="US Median ")) +
-  geom_line(data = ohio,aes(x=date,y=new_cases,col="Ohio Cases")) +
-  labs(title="US Median vs Ohio Cases")
-```
-
-### US vs Ohio Daily Cases vs US Mean Cases
-
-```{r}
-
-ggplot(us_no_ohio) + geom_line(aes(x=date,y=mean_cases,col="US Mean ")) +
-  geom_line(data = ohio,aes(x=date,y=new_cases,col="Ohio Cases")) +
+df %>% ggplot() + geom_line(aes(x=date,y=new_cases)) +
   scale_y_continuous(labels = comma) +
-  labs(title="US Mean Cases vs Ohio Cases")
+  labs(title="Ohio Daily Cases (raw data)")
+
+df %>% select(new_cases) %>% diagnose_numeric() %>% flextable()
 ```
 
-### US vs Ohio Daily Deaths vs US Median Deaths
+### Basic Plots: Deaths
 
 ```{r}
-ohio <- subset(df,state =="Ohio")
-ggplot(us_no_ohio) + geom_line(aes(x=date,y=median_deaths,col="US Median ")) +
-  geom_line(data = ohio,aes(x=date,y=new_deaths,col="Ohio Cases")) +
-  labs(title="US Median vs Ohio Deaths")
-```
-
-### US vs Ohio Daily Cases vs US Median Cases
-
-```{r}
-
-ggplot(us_no_ohio) + geom_line(aes(x=date,y=mean_deaths,col="US Mean ")) +
-  geom_line(data = ohio,aes(x=date,y=new_deaths,col="Ohio Deaths")) +
+df %>% ggplot() + geom_line(aes(x=date,y=new_deaths)) +
   scale_y_continuous(labels = comma) +
-  labs(title="US Mean Deaths vs Ohio Deaths")
+  labs(title="Ohio Daily Deaths (raw data)")
+
+df %>% select(new_deaths) %>% diagnose_numeric() %>% flextable()
 ```
 
-### Ohio Mean and Medians Cases and Deaths
+### Loess Plot for Deaths
 
 ```{r}
-county <- dbGetQuery(db,"select * from STATESDAILY")
-county$date <- as.Date(county$date)
-county <- county[order(county$date),]
-OSU <- subset(county,state =="Ohio")
-```
-```{r}
-buckeye <- OSU %>% group_by(date) %>%
-  summarise( median_cases = median(new_cases),
-             mean_cases = mean(new_cases),
-             median_deaths = median(new_deaths),
-             mean_deaths = mean(new_deaths))
+df %>% ggplot() + geom_smooth(aes(x=date,y=new_deaths),span=0.25) +
+  scale_y_continuous(labels = comma) +
+  labs(title="Ohio Daily Deaths (Loess)",y="Deaths Smoothed")
 ```
 
+### Deaths Smoothed using Moving Avearge
 ```{r}
-ggplot(buckeye) + geom_line(aes(x=date,y=median_cases,col="Median Cases")) + 
-  labs(title = "Ohio Daily Median Cases",y="Median Cases") +
-  scale_y_continuous(labels = comma) 
+# Replace Feb. 12/13 with NA
+df$new_deaths <- as.numeric(df$new_deaths)
+df <- dplyr::mutate(
+  df,new_deaths = dplyr::if_else(date >= "2021-02-12" & date <="2021-02-13",70, new_deaths))
+
 ```
-
 ```{r}
-ggplot(buckeye) + geom_line(aes(x=date,y=mean_cases,col="Mean Cases")) + 
-  labs(title = "Ohio Daily Mean Cases",y="Mean Cases") +
-  scale_y_continuous(labels = comma) 
-```
-
-```{r}
-ggplot(buckeye) + geom_line(aes(x=date,y=median_cases,col="Median Cases")) + 
-  labs(title = "Ohio Daily Median Cases",y="Median Deaths") +
-  scale_y_continuous(labels = comma) + ylim(0,250) +
-  geom_line(data=us_no_ohio,aes(x=date,y=median_cases,col="US Median Cases"))
-```
-
-### Ohio Daily Mean Deaths vs US
-
-```{r}
-ggplot(buckeye) + geom_line(aes(x=date,y=mean_deaths,col="Mean Deaths")) + 
-  labs(title = "Ohio Daily Mean Deaths",y="Mean Deaths") +
-  scale_y_continuous(labels = comma) + ylim(0,500) +
-  geom_line(data=us_no_ohio,aes(x=date,y=mean_deaths,col="US Mean Cases"))
-```
-
-### A Little Bit of R, A Little Bit of dplyr and a Little bit of ggplot2
-#### US Without Ohio
-
-```{r}
-options(digits=4)
-no_ohio %>% select(new_cases,new_deaths) %>% diagnose_numeric()
-```
-#### Ohio Only
-
-```{r}
-OSU %>% select(new_cases,new_deaths) %>% diagnose_numeric()
-```
-
-### Density Plots and Hisograms
-
-```{r}
-no_ohio %>% select(date,new_cases) %>% filter(new_cases >0) %>% ggplot(aes(x=new_cases)) +
-  geom_density() + scale_y_continuous(labels = percent) + scale_x_log10() +
-  labs(title="US W/o OHio Density Plot of Daily Cases")
-```
-
-```{r}
-OSU %>% select(date,new_cases) %>% filter(new_cases >0) %>% ggplot(aes(x=new_cases)) +
-  geom_density() + scale_y_continuous(labels = percent) + scale_x_log10() +
-  labs(title="Ohio Density Plot of Daily Cases")
+df$MAD <- ma(df$new_deaths,21,centre = TRUE)
+buckeye <- df %>% filter(date >="2020-12-01") 
+ggplot(buckeye) + geom_line(aes(x=date,y=MAD),lwd=1,col="red") +
+  labs(title="Ohio Deaths ( 21 Day Moving Average)",y="21 Day Moivng Average",
+       x="Dates Starting with Dec  1,2020") +
+  geom_smooth(aes(x=date,y=MAD),method="glm")
   
 ```
-
-### Stacked Density Plot US vs Ohio
-
 ```{r}
-ggplot() + geom_density(data=no_ohio,aes(x=new_cases,fill="US Daily Cases")) +
-  geom_density(data=OSU,aes(x=new_cases,fill="Ohio Daily Cases"),alpha=0.5) +
-  scale_x_log10(labels = comma) + scale_y_continuous(labels = percent) +
-   labs(title="Daily Cases Density Plot of US (w/o Ohio)  vs Ohio",
-        x="Daily Cases")
-```
-```{r}
-ggplot() + geom_density(data=no_ohio,aes(x=new_deaths,fill="US Daily Deaths")) +
-  geom_density(data=OSU,aes(x=new_deaths,fill="Ohio Daily Deaths"),alpha=0.5) +
-  scale_x_log10(labels = comma) + scale_y_continuous(labels = percent) +
-   labs(title="Daily Deaths: Density Plot of US (w/o Ohio)  vs Ohio",
-        x="Daily Cases")
+df$MAC <- ma(df$new_cases,21,centre = TRUE)
+buckeye <- df %>% filter(date >="2020-12-01") 
+ggplot(buckeye) + geom_line(aes(x=date,y=MAC),lwd=1,col="red") +
+  labs(title="Ohio Cases (21 Day Moving Average)",y="21 Day Moivng Average",
+       x="Dates Starting with Dec. 1,2020") +
+  geom_smooth(aes(x=date,y=MAC),method="glm")
+
 ```
