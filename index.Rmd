@@ -76,13 +76,17 @@ ggplot(buckeye) + geom_line(aes(x=date,y=MAC),lwd=1,col="red") +
   geom_smooth(aes(x=date,y=MAC),method="glm")
 
 ```
+### Plot Daily Country
 
 ```{r}
-df$MAC <- ma(df$new_cases,21,centre = TRUE)
-buckeye <- df %>% filter(date >="2020-12-01") 
+df1 <- dbGetQuery(db,"select date,new_cases,new_deaths from COUNTYDAILY where state = 'Ohio'")
+df1$date <- as.Date(df1$date)
+df1 <- df1[order(df1$date),]
+df1$MAC <- ma(df1$new_cases,21,centre = TRUE)
+buckeye <- df1 %>% filter(date >="2020-12-01") 
 ggplot(buckeye) + geom_point(aes(x=date,y=MAC),lwd=1,col="red") +
-  labs(title="Ohio Cases (21 Day Moving Average)",y="21 Day Moivng Average",
+  labs(title="Ohio Cases County by Day",y="21 Day Moivng Average",
        x="Dates Starting with Dec. 1,2020") +
-  geom_smooth(aes(x=date,y=MAC),method="glm")
+  geom_smooth(aes(x=date,y=MAC))
 
 ```
