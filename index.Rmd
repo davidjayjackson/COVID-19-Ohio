@@ -1,7 +1,7 @@
 ---
 title: "Ohio Covid-19 Report"
 author: "David Jackson"
-date: "4/23/2021 11:36 AM/EDT"
+date: "4/25/2021  3:00 PM/EDT"
 output: 
   html_document: 
     fig_width: 9
@@ -71,6 +71,16 @@ ggplot(buckeye) + geom_line(aes(x=date,y=MAD),lwd=1,col="red") +
 df$MAC <- ma(df$new_cases,21,centre = TRUE)
 buckeye <- df %>% filter(date >="2020-12-01") 
 ggplot(buckeye) + geom_line(aes(x=date,y=MAC),lwd=1,col="red") +
+  labs(title="Ohio Cases (21 Day Moving Average)",y="21 Day Moivng Average",
+       x="Dates Starting with Dec. 1,2020") +
+  geom_smooth(aes(x=date,y=MAC),method="glm")
+
+```
+
+```{r}
+df$MAC <- ma(df$new_cases,21,centre = TRUE)
+buckeye <- df %>% filter(date >="2020-12-01") 
+ggplot(buckeye) + geom_point(aes(x=date,y=MAC),lwd=1,col="red") +
   labs(title="Ohio Cases (21 Day Moving Average)",y="21 Day Moivng Average",
        x="Dates Starting with Dec. 1,2020") +
   geom_smooth(aes(x=date,y=MAC),method="glm")
