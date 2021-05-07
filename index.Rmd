@@ -1,7 +1,7 @@
 ---
 title: "Ohio Covid-19 Report"
 author: "David Jackson"
-date: "05/06/2021  11:35  AM/EDT"
+date: "05/07/2021  11:35  AM/EDT"
 output: 
   html_document: 
     fig_width: 9
