@@ -1,7 +1,7 @@
 ---
 title: "Ohio Covid-19 Report"
 author: "David Jackson"
-date: "05/14/2021  1:15  PM/EDT"
+date: "05/18/2021  12:25  PM/EDT"
 output: 
   html_document: 
     fig_width: 9
@@ -26,7 +26,9 @@ rm(list=ls())
 db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVID-19-DB/NYTimes.sqlite3")
 df <- dbGetQuery(db,"select date,new_cases,new_deaths from STATESDAILY where state = 'Ohio'")
 df$date <- as.Date(df$date)
-df <- df[order(df$date),]
+df <- df[order(df$date),] 
+df$new_deaths <- ifelse(df$date =="2021-02-12",-1,df$new_deaths)
+df$new_deaths <- ifelse(df$date =="2021-02-13",-1,df$new_deaths)
 ```
 
 ### Basic Plots: Cases 
