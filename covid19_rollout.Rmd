@@ -29,25 +29,26 @@ db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVID-19-DB/NYTimes.sqlite3"
 df <- dbGetQuery(db,"select * from usvaccine")
 df <- df[order(df$Date),]
 df <- subset(df,Province_State =="Ohio" )
-df$date <- as.Date(df$Date,format="%m-%d-%Y")
+df$Date <- as.Date(df$Date,format="%Y-%m-%d")
 ```
 ```{r}
-buckeye <- df %>% select(Date,Doses_admin)
+buckeye <- df %>% select(Date,Doses_admin) %>% na.omit() %>% 
+  group_by(Date) %>% summarise(Admin = sum(Doses_admin))
 ```
 
 ### doses_admin_total
 
 ```{r}
-# p1 <- buckeye %>% ggplot() + geom_area(aes(x=Date,y=Doses_admin,fill="red")) +
-#   scale_y_continuous(labels=comma) +
-#   labs(title="doses_admin_total")
-# ggplotly(p1)
-```
-### people_total
+buckeye %>% ggplot() + geom_line(aes(x=Date,y=Admin,fill="red")) +
+scale_y_continuous(labels=comma) +
+labs(title="doses_admin_total")
 
-```{r}
-# p2 <- buckeye %>% ggplot() + geom_area(aes(x=Date,y=People_total,fill="red")) +
-#   scale_y_continuous(labels=comma) +
-#   labs(title="people_total")
-# ggplotly(p2)
 ```
+```{r}
+df %>% filter(Vaccine_Type =="All") %>%
+  ggplot() + geom_line(aes(x=Date,y=Stage_Two_Doses,col="Stage Two"),lwd=2) +
+  geom_line(aes(x=Date,y=Stage_One_Doses,col="Stage Doses"),lwd=2) +
+  scale_y_continuous(labels=comma) +
+labs(title="Daily Stages One/TWo Doses Covid19 Vaccine")
+```
+
