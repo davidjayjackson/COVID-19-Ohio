@@ -1,0 +1,65 @@
+---
+title: "Comparing Ohio County vs State"
+author: "David Jackson"
+date: "6/2/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(scales)
+library(dplyr)
+library(tidyr)
+library(dlookr)
+```
+
+## Comparing Daily Totals From County and State 
+### Covid-19 State Totals for Case
+(Source: New York Times/Github)
+```{r}
+rm(list=ls())
+state <- read.csv("../COVID-19-NYTimes-data/us-states.csv")
+state <- state %>% filter(state =="Ohio" ) 
+state$date <- as.Date(state$date)
+state$StateCases <- state$cases - lag(state$cases,k=1)
+state$StateDeaths <- state$deaths - lag(state$deaths,k=1) 
+state <- state %>% filter(date >="2020-10-01")
+```
+
+### Daily Totals from Counties
+
+```{r}
+county <- read.csv("../COVID-19-NYTimes-data/us-counties.csv")
+county <- county %>% filter(state =="Ohio")
+county$date <- as.Date(county$date)
+
+county_daily <- county %>% group_by(date) %>%
+  summarise(Cases = sum(cases),
+            Deaths = sum(deaths))
+
+county_daily$CountyCases <- county_daily$Cases - lag(county_daily$Cases,k=1)
+county_daily$CountyDeaths <- county_daily$Deaths - lag(county_daily$Deaths,k=1)
+county_daily <- county_daily %>% filter(date >="2020-10-01")
+```
+
+### Plot Daily Cases vs County Totals
+
+```{r} 
+
+ggplot() + geom_line(data=state,aes(x=date,y=StateCases,col="By State"),lwd=3,alpha = 0.75) +
+  geom_line(data = county_daily,aes(x=date,y=CountyCases,col="By County")) +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Cases: Comparing Daily Totals by State and County")
+```
+
+### Plot Daily Deaths vs County Totals
+
+```{r} 
+
+ggplot() + geom_line(data=state,aes(x=date,y=StateDeaths,col="By State"),lwd=3,alpha = 0.75) +
+  geom_line(data = county_daily,aes(x=date,y=CountyDeaths,col="By County")) +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Deaths: Comparing Daily Totals by State and County")
+```
+
