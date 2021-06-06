@@ -1,7 +1,7 @@
 ---
 title: "Ohio COVID-19 Vaccine Rollout"
 author: "IllicitDavid Jackson"
-date: "5/30/2021 1:30 PM/EST"
+date: "6/6/2021 1:30 PM/EST"
 output: 
   html_document: 
     fig_width: 9
