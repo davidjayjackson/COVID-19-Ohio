@@ -48,9 +48,10 @@ df %>% select(new_cases) %>% diagnose_numeric() %>% flextable()
 ```{r}
 df %>% ggplot() + geom_line(aes(x=date,y=new_deaths)) +
   scale_y_continuous(labels = comma) +
-  labs(title="Ohio Daily Deaths (raw data)")
+  labs(title="Ohio Daily Deaths (raw data)") +
+  expand_limits(y=0)
 
-df %>% select(new_deaths) %>% diagnose_numeric() %>% flextable() + expand_limits(y=0)
+df %>% select(new_deaths) %>% diagnose_numeric() %>% flextable()  
 ```
 
 ### Deaths Smoothed using Moving Avearge
