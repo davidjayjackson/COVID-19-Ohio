@@ -1,7 +1,7 @@
 ---
 title: "Ohio Covid-19 Report"
 author: "David Jackson"
-date: "06/08/2021  11:00 AM/EDT"
+date: "06/09/2021  1:15 PM/EDT"
 output: 
   html_document: 
     fig_width: 9
@@ -38,7 +38,7 @@ df$new_deaths <- ifelse(df$date =="2021-02-11",mean(df$new_deaths,na.rm = TRUE),
 ```{r}
 df %>% ggplot() + geom_line(aes(x=date,y=new_cases)) +
   scale_y_continuous(labels = comma) +
-  labs(title="Ohio Daily Cases (raw data)")
+  labs(title="Ohio Daily Cases (raw data)") + expand_limits(y=0)
 
 df %>% select(new_cases) %>% diagnose_numeric() %>% flextable()
 ```
@@ -50,7 +50,7 @@ df %>% ggplot() + geom_line(aes(x=date,y=new_deaths)) +
   scale_y_continuous(labels = comma) +
   labs(title="Ohio Daily Deaths (raw data)")
 
-df %>% select(new_deaths) %>% diagnose_numeric() %>% flextable()
+df %>% select(new_deaths) %>% diagnose_numeric() %>% flextable() + expand_limits(y=0)
 ```
 
 ### Deaths Smoothed using Moving Avearge
