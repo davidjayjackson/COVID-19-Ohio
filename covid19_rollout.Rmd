@@ -1,7 +1,7 @@
 ---
 title: "Ohio COVID-19 Vaccine Rollout"
 author: "IllicitDavid Jackson"
-date: "6/6/2021 1:30 PM/EST"
+date: "6/13/2021 1:55 PM/EST"
 output: 
   html_document: 
     fig_width: 9
@@ -39,16 +39,17 @@ buckeye <- df %>% select(Date,Doses_admin) %>% na.omit() %>%
 ### doses_admin_total
 
 ```{r}
-buckeye %>% ggplot() + geom_line(aes(x=Date,y=Admin,fill="red")) +
+p0 <- buckeye %>% ggplot() + geom_line(aes(x=Date,y=Admin,fill="red")) +
 scale_y_continuous(labels=comma) +
 labs(title="doses_admin_total")
-
+ggplotly(p0)
 ```
 ```{r}
-df %>% filter(Vaccine_Type =="All") %>%
+p1 <- df %>% filter(Vaccine_Type =="All") %>%
   ggplot() + geom_line(aes(x=Date,y=Stage_Two_Doses,col="Stage Two"),lwd=2) +
   geom_line(aes(x=Date,y=Stage_One_Doses,col="Stage Doses"),lwd=2) +
   scale_y_continuous(labels=comma) +
 labs(title="Daily Stages One/TWo Doses Covid19 Vaccine")
+ggplotly(p1)
 ```
 
