@@ -1,7 +1,7 @@
 ---
 title: "Ohio Covid-19 Report"
 author: "David Jackson"
-date: "07/01/2021  1:35  PM/EDT"
+date: "`r Sys.time()`"
 output: 
   html_document: 
     fig_width: 9
@@ -28,6 +28,8 @@ db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVID-19-DB/NYTimes.sqlite3"
 df <- dbGetQuery(db,"select date,new_cases,new_deaths from STATESDAILY where state = 'Ohio'")
 df$date <- as.Date(df$date)
 df <- df[order(df$date),] 
+```
+```{r}
 df$new_deaths <- ifelse(df$date =="2021-02-12",mean(df$new_deaths,na.rm = TRUE),df$new_deaths)
 df$new_deaths <- ifelse(df$date =="2021-02-13",mean(df$new_deaths,na.rm = TRUE),df$new_deaths)
 df$new_deaths <- ifelse(df$date =="2021-02-11",mean(df$new_deaths,na.rm = TRUE),df$new_deaths)
