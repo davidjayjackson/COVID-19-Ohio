@@ -35,6 +35,12 @@ df$new_deaths <- ifelse(df$date =="2021-02-13",mean(df$new_deaths,na.rm = TRUE),
 df$new_deaths <- ifelse(df$date =="2021-02-11",mean(df$new_deaths,na.rm = TRUE),df$new_deaths)
 ```
 
+## Looking closer at the numbers for Feb 7 - 17
+
+```{r}
+df %>% filter(date >="2021-02-07" & date <= "2021-02-14") %>% ggplot(aes(x=date,y=new_deaths)) + geom_col()
+```
+
 ### Basic Plots: Cases 
 
 ```{r}
@@ -83,9 +89,5 @@ ggplot(buckeye) + geom_line(aes(x=date,y=MAC),lwd=1,col="red") +
   geom_smooth(aes(x=date,y=MAC),method="glm")
 
 ```
-## Looking closer at the numbers for Feb 7 - 17
 
-```{r}
-df %>% filter(date >="2021-02-07" & date <= "2021-02-14") %>% ggplot(aes(x=date,y=new_deaths)) + geom_col()
-```
 
