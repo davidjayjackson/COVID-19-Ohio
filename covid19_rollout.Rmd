@@ -1,7 +1,7 @@
 ---
 title: "Ohio COVID-19 Vaccine Rollout"
 author: "IllicitDavid Jackson"
-date: "6/29/2021 10:20  AM/EST"
+date: "`r Sys.time()`"
 output: 
   html_document: 
     fig_width: 9
