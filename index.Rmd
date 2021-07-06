@@ -41,6 +41,26 @@ df$new_deaths <- ifelse(df$date =="2021-02-11",mean(df$new_deaths,na.rm = TRUE),
 df %>% filter(date >="2021-02-07" & date <= "2021-02-14") %>% ggplot(aes(x=date,y=new_deaths)) + geom_col()
 ```
 
+### Basic Plots: Deaths
+
+```{r}
+df %>% ggplot() + geom_line(aes(x=date,y=new_deaths)) +
+  scale_y_continuous(labels = comma) +
+  labs(title="Ohio Daily Deaths (raw data)") +
+  expand_limits(y=0)
+
+df %>% select(new_deaths) %>% diagnose_numeric() %>% flextable()  
+
+df$MAD <- ma(df$new_deaths,7,centre = TRUE)
+buckeye <- df %>% filter(date >="2020-12-01") 
+ggplot(buckeye) + geom_line(aes(x=date,y=MAD),lwd=1,col="red") + 
+    labs(title="Ohio Deaths ( 7 Day Moving Average)",y="21 Day Moivng Average",
+       x="Dates Starting with Dec  1,2020") + ylim(0,150) +
+  geom_smooth(aes(x=date,y=MAD),method="glm")
+  
+
+```
+
 ### Basic Plots: Cases 
 
 ```{r}
@@ -51,35 +71,6 @@ df %>% ggplot() + geom_line(aes(x=date,y=new_cases)) +
 df %>% select(new_cases) %>% diagnose_numeric() %>% flextable()
 ```
 
-### Basic Plots: Deaths
-
-```{r}
-df %>% ggplot() + geom_line(aes(x=date,y=new_deaths)) +
-  scale_y_continuous(labels = comma) +
-  labs(title="Ohio Daily Deaths (raw data)") +
-  expand_limits(y=0)
-
-df %>% select(new_deaths) %>% diagnose_numeric() %>% flextable()  
-```
-
-### Deaths Smoothed using Moving Avearge
-
-```{r}
-# Replace Feb. 12/13 with NA
-# df$new_deaths <- as.numeric(df$new_deaths)
-# df <- dplyr::mutate(
-#   df,new_deaths = dplyr::if_else(date >= "2021-02-12" & date <="2021-02-13",70, new_deaths))
-
-```
-```{r}
-df$MAD <- ma(df$new_deaths,7,centre = TRUE)
-buckeye <- df %>% filter(date >="2020-12-01") 
-ggplot(buckeye) + geom_line(aes(x=date,y=MAD),lwd=1,col="red") + 
-    labs(title="Ohio Deaths ( 7 Day Moving Average)",y="21 Day Moivng Average",
-       x="Dates Starting with Dec  1,2020") + ylim(0,150) +
-  geom_smooth(aes(x=date,y=MAD),method="glm")
-  
-```
 ```{r}
 df$MAC <- ma(df$new_cases,7,centre = TRUE)
 buckeye <- df %>% filter(date >="2020-12-01") 
