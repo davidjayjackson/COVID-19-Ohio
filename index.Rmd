@@ -30,6 +30,10 @@ df$date <- as.Date(df$date)
 df <- df[order(df$date),] 
 ```
 ```{r}
+df %>% filter(date >="2021-02-07" & date <= "2021-02-14") %>% ggplot(aes(x=date,y=new_deaths)) + geom_col() +
+  labs(title ="Before Adjustments")
+```
+```{r}
 df$new_deaths <- ifelse(df$date =="2021-02-12",mean(df$new_deaths,na.rm = TRUE),df$new_deaths)
 df$new_deaths <- ifelse(df$date =="2021-02-13",mean(df$new_deaths,na.rm = TRUE),df$new_deaths)
 df$new_deaths <- ifelse(df$date =="2021-02-11",mean(df$new_deaths,na.rm = TRUE),df$new_deaths)
@@ -38,7 +42,8 @@ df$new_deaths <- ifelse(df$date =="2021-02-11",mean(df$new_deaths,na.rm = TRUE),
 ## Looking closer at the numbers for Feb 7 - 17
 
 ```{r}
-df %>% filter(date >="2021-02-07" & date <= "2021-02-14") %>% ggplot(aes(x=date,y=new_deaths)) + geom_col()
+df %>% filter(date >="2021-02-07" & date <= "2021-02-14") %>% ggplot(aes(x=date,y=new_deaths)) + geom_col() +
+  labs(title = "After Adjustments")
 ```
 
 ### Basic Plots: Deaths
