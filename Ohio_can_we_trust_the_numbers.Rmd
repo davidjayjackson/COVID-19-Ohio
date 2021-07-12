@@ -19,6 +19,11 @@ library(ggplot2)
 library(scales)
 library(RSQLite)
 library(dplyr)
+library(pracma)
+library(flextable)
+library(dlookr)
+library(benford.analysis)
+options(digits = 2)
 ```
 ```{r}
 rm(list=ls())
@@ -27,14 +32,15 @@ df <- dbGetQuery(db,"select * from STATESDAILY")
 df <- df[order(df$date),]
 df$date <- as.Date(df$date)
 df <- subset(df,state =="Ohio" & date >="2020-03-10" )
-
-summary(df$new_cases,na.rm=TRUE)
-summary(df$new_deaths,na.rm=TRUE)
-library(benford.analysis)
-library(pracma)  ## Inclused a funcion to do various rolling means calc.
 ```
 
 # Comparison of Ohio Cases and Deaths
+
+```{r}
+df %>% 
+  select(new_cases,new_deaths)%>% diagnose_numeric() %>% flextable()
+```
+
 
 ```{r}
 df$mac7 <- movavg(df$new_cases,7, type="e")
