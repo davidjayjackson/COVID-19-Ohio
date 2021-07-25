@@ -57,7 +57,7 @@ df %>% ggplot() + geom_line(aes(x=date,y=new_deaths)) +
 df %>% select(new_deaths) %>% diagnose_numeric() %>% flextable()  
 
 df$MAD <- ma(df$new_deaths,7,centre = TRUE)
-buckeye <- df %>% filter(date >="2020-12-01") 
+buckeye <- df %>% filter(date >="2020-10-01") 
 ggplot(buckeye) + geom_line(aes(x=date,y=MAD),lwd=1,col="red") + 
     labs(title="Ohio Deaths ( 7 Day Moving Average)",y="21 Day Moivng Average",
        x="Dates Starting with Dec  1,2020") + ylim(0,150) +
@@ -78,7 +78,7 @@ df %>% select(new_cases) %>% diagnose_numeric() %>% flextable()
 
 ```{r}
 df$MAC <- ma(df$new_cases,7,centre = TRUE)
-buckeye <- df %>% filter(date >="2020-12-01") 
+buckeye <- df %>% filter(date >="2020-10-01") 
 ggplot(buckeye) + geom_line(aes(x=date,y=MAC),lwd=1,col="red") +
   labs(title="Ohio Cases (7 Day Moving Average)",y="21 Day Moivng Average",
        x="Dates Starting with Dec. 1,2020") +
