@@ -1,6 +1,6 @@
 ---
 title: "Ohio COVID-19 Vaccine Rollout"
-author: "IllicitDavid Jackson"
+author: "David Jackson"
 date: "`r Sys.time()`"
 output: 
   html_document: 
