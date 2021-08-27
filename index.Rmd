@@ -49,10 +49,10 @@ df %>% filter(date >="2021-02-07" & date <= "2021-02-14") %>% ggplot(aes(x=date,
 ### Basic Plots: Deaths
 
 ```{r}
-df %>% ggplot() + geom_line(aes(x=date,y=new_deaths)) +
-  scale_y_continuous(labels = comma) +
-  labs(title="Ohio Daily Deaths (raw data)") +
-  expand_limits(y=0)
+# df %>% ggplot() + geom_line(aes(x=date,y=new_deaths)) +
+#   scale_y_continuous(labels = comma) +
+#   labs(title="Ohio Daily Deaths (raw data)") +
+#   expand_limits(y=0)
 
 df %>% select(new_deaths) %>% diagnose_numeric() %>% flextable()  
 
@@ -69,9 +69,9 @@ ggplot(buckeye) + geom_line(aes(x=date,y=MAD),lwd=1,col="red") +
 ### Basic Plots: Cases 
 
 ```{r}
-df %>% ggplot() + geom_line(aes(x=date,y=new_cases)) +
-  scale_y_continuous(labels = comma) +
-  labs(title="Ohio Daily Cases (raw data)") + expand_limits(y=0)
+# df %>% ggplot() + geom_line(aes(x=date,y=new_cases)) +
+#   scale_y_continuous(labels = comma) +
+#   labs(title="Ohio Daily Cases (raw data)") + expand_limits(y=0)
 
 df %>% select(new_cases) %>% diagnose_numeric() %>% flextable()
 ```
