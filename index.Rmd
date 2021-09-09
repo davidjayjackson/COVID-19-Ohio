@@ -54,7 +54,7 @@ df %>% filter(date >="2021-02-07" & date <= "2021-02-14") %>% ggplot(aes(x=date,
 #   labs(title="Ohio Daily Deaths (raw data)") +
 #   expand_limits(y=0)
 
-df %>% select(new_deaths) %>% diagnose_numeric() %>% flextable()  
+  
 
 df$MAD <- ma(df$new_deaths,7,centre = TRUE)
 buckeye <- df %>% filter(date >="2020-10-01") 
@@ -63,18 +63,11 @@ ggplot(buckeye) + geom_line(aes(x=date,y=MAD),lwd=1,col="red") +
        x="Dates Starting with Dec  1,2020") + ylim(0,150) +
   geom_smooth(aes(x=date,y=MAD),method="glm")
   
-
+df %>% select(new_deaths) %>% diagnose_numeric() %>% flextable()
 ```
 
 ### Basic Plots: Cases 
 
-```{r}
-# df %>% ggplot() + geom_line(aes(x=date,y=new_cases)) +
-#   scale_y_continuous(labels = comma) +
-#   labs(title="Ohio Daily Cases (raw data)") + expand_limits(y=0)
-
-df %>% select(new_cases) %>% diagnose_numeric() %>% flextable()
-```
 
 ```{r}
 df$MAC <- ma(df$new_cases,7,centre = TRUE)
@@ -84,6 +77,7 @@ ggplot(buckeye) + geom_line(aes(x=date,y=new_cases),lwd=1,col="red") +
        x="Dates Starting with Dec. 1,2020") +
   geom_smooth(aes(x=date,y=new_cases),method="gam")
 
+df %>% select(new_cases) %>% diagnose_numeric() %>% flextable()
 ```
 
 
