@@ -18,6 +18,7 @@ library(forecast)
 library(flextable)
 library(RSQLite)
 library(timetk)
+library(pracma)
 theme_set(theme_linedraw())
 ```
 
@@ -51,7 +52,7 @@ df %>% filter(date >="2021-02-07" & date <= "2021-02-14") %>% ggplot(aes(x=date,
 
 ```{r}
 
-df$MAD <- ma(df$new_deaths,7,centre = TRUE)
+df$MAD <- movavg(df$new_deaths,7,type="e")
 buckeye <- df %>% filter(date >="2020-10-01") 
 ggplot(buckeye) + geom_line(aes(x=date,y=MAD),lwd=1,col="red") + 
     labs(title="Ohio Deaths ( 7 Day Moving Average)",y="21 Day Moivng Average",
@@ -73,7 +74,7 @@ df %>% group_by(date) %>%
 
 
 ```{r}
-df$MAC <- ma(df$new_cases,7,centre = TRUE)
+df$MAC <- movavg(df$new_cases,7,type = "e")
 buckeye <- df %>% filter(date >="2020-10-01") 
 ggplot(buckeye) + geom_col(aes(x=date,y=new_cases),lwd=1,col="red") +
   labs(title="Ohio Cases (+ Loess fitted Curve)",y="Lowaa Fitted Curve",
