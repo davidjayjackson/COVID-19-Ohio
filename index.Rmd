@@ -64,7 +64,7 @@ df %>% select(new_deaths) %>% diagnose_numeric() %>% flextable()
 ```{r}
 df %>% group_by(date) %>%
   summarise_by_time(date,.by = "week",Deaths =sum(new_deaths)) %>%
-  ggplot() + geom_col(aes(x=date,y=Deaths,col="Deaths"),lwd=2) +
+  ggplot() + geom_line(aes(x=date,y=Deaths,col="Deaths"),lwd=2) +
   labs(title = "Ohio Covid-19 Deaths by Week")
 ```
 
@@ -76,7 +76,7 @@ df %>% group_by(date) %>%
 ```{r}
 df$MAC <- movavg(df$new_cases,7,type = "e")
 buckeye <- df %>% filter(date >="2020-10-01") 
-ggplot(buckeye) + geom_col(aes(x=date,y=new_cases),lwd=1,col="red") +
+ggplot(buckeye) + geom_line(aes(x=date,y=new_cases),lwd=1,col="red") +
   labs(title="Ohio Cases (+ Loess fitted Curve)",y="Lowaa Fitted Curve",
        x="Dates Starting with Dec. 1,2020") +
   geom_smooth(aes(x=date,y=new_cases),method="loess",span = 0.25)
@@ -89,7 +89,7 @@ df %>% select(new_cases) %>% diagnose_numeric() %>% flextable()
 
 ```{r}
 buckeye <- df %>% filter(date >="2020-10-01") 
-ggplot(buckeye) + geom_col(aes(x=date,y=new_deaths),lwd=1,col="red") +
+ggplot(buckeye) + geom_line(aes(x=date,y=new_deaths),lwd=1,col="red") +
   labs(title="Ohio Deaths (Loess,span = 0.2)",y="21 Day Moivng Average",
        x="Dates Starting with Dec. 1,2020") +
   geom_smooth(aes(x=date,y=new_deaths),span = 0.2) + ylim(0,250)
@@ -98,6 +98,6 @@ ggplot(buckeye) + geom_col(aes(x=date,y=new_deaths),lwd=1,col="red") +
 ```{r}
 df %>% group_by(date) %>%
   summarise_by_time(date,.by = "week",Cases =sum(new_cases)) %>%
-  ggplot() + geom_col(aes(x=date,y=Cases,col="Cases"),lwd=2) +
+  ggplot() + geom_line(aes(x=date,y=Cases,col="Cases"),lwd=2) +
   labs(title = "Ohio Covid-19 Cases by Week")
 ```
