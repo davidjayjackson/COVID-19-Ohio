@@ -53,3 +53,13 @@ labs(title="Daily Stages One/TWo Doses Covid19 Vaccine")
 ggplotly(p1)
 ```
 
+### Percent Vaccanated
+
+```{r}
+df$percent1 <- df$Stage_One_Doses/11800000
+p1 <- df %>% filter(Vaccine_Type =="All") %>%
+  ggplot() + geom_line(aes(x=Date,y=percent1,col="Stage One"),lwd=2) +
+  scale_y_continuous(labels=percent) +
+labs(title="Percent of People Receiving Stages One Vaccine")
+ggplotly(p1)
+```
