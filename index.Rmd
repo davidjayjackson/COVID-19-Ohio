@@ -55,7 +55,7 @@ df %>% filter(date >="2021-02-07" & date <= "2021-02-14") %>% ggplot(aes(x=date,
 df$MAD <- movavg(df$new_deaths,14,type="e")
 buckeye <- df %>% filter(date >="2020-10-01") 
 ggplot(buckeye) + geom_line(aes(x=date,y=MAD),lwd=1,col="red") + 
-    labs(title="Ohio Deaths ( 7 Day Moving Average)",y="21 Day Moivng Average",
+    labs(title="Ohio Deaths ( 14 Day Moving Average)",y="14 Day Moivng Average",
        x="Dates Starting with Dec  1,2020") + ylim(0,150) +
   geom_smooth(aes(x=date,y=MAD),method="glm")
   
