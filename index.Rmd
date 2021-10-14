@@ -57,7 +57,7 @@ buckeye <- df %>% filter(date >="2020-10-01")
 ggplot(buckeye) + geom_line(aes(x=date,y=MAD),lwd=1,col="red") + 
     labs(title="Ohio Deaths ( 14 Day Moving Average)",y="14 Day Moivng Average",
        x="Dates Starting with Dec  1,2020") + ylim(0,150) +
-  geom_smooth(aes(x=date,y=MAD),method="glm")
+  geom_smooth(aes(x=date,y=MAD),method="loess",span=0.5)
   
 df %>% select(new_deaths) %>% diagnose_numeric() %>% flextable()
 ```
@@ -84,17 +84,6 @@ ggplot(buckeye) + geom_line(aes(x=date,y=new_cases),lwd=1,col="red") +
 df %>% select(new_cases) %>% diagnose_numeric() %>% flextable()
 ```
 
-
-
-
-```{r}
-buckeye <- df %>% filter(date >="2020-10-01") 
-ggplot(buckeye) + geom_line(aes(x=date,y=new_deaths),lwd=1,col="red") +
-  labs(title="Ohio Deaths (Loess,span = 0.2)",y="21 Day Moivng Average",
-       x="Dates Starting with Dec. 1,2020") +
-  geom_smooth(aes(x=date,y=new_deaths),span = 0.2) + ylim(0,250)
-
-```
 ```{r}
 df %>% group_by(date) %>%
   summarise_by_time(date,.by = "week",Cases =sum(new_cases)) %>%
