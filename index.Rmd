@@ -68,8 +68,6 @@ df %>% group_by(date) %>%
   labs(title = "Ohio Covid-19 Deaths by Week")
 ```
 
-
-
 ### Basic Plots: Cases 
 
 
