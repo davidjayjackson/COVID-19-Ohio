@@ -62,10 +62,10 @@ ggplot(buckeye) + geom_line(aes(x=date,y=MAD),lwd=1,col="red") +
 df %>% select(new_deaths) %>% diagnose_numeric() %>% flextable()
 ```
 ```{r}
-df %>% group_by(date) %>%
-  summarise_by_time(date,.by = "week",Deaths =sum(new_deaths)) %>%
-  ggplot() + geom_line(aes(x=date,y=Deaths,col="Deaths"),lwd=2) +
-  labs(title = "Ohio Covid-19 Deaths by Week")
+# df %>% group_by(date) %>%
+#   summarise_by_time(date,.by = "week",Deaths =sum(new_deaths)) %>%
+#   ggplot() + geom_line(aes(x=date,y=Deaths,col="Deaths"),lwd=2) +
+#   labs(title = "Ohio Covid-19 Deaths by Week")
 ```
 
 ### Basic Plots: Cases 
