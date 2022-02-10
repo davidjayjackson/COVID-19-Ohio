@@ -32,40 +32,40 @@ df$date <- as.Date(df$date)
 df <- df[order(df$date),] 
 ```
 ```{r}
-df %>% filter(date >="2021-02-07" & date <= "2021-02-14") %>% ggplot(aes(x=date,y=new_deaths)) + geom_col() +
-  labs(title ="Before Adjustments")
+# df %>% filter(date >="2021-02-07" & date <= "2021-02-14") %>% ggplot(aes(x=date,y=new_deaths)) + geom_col() +
+#   labs(title ="Before Adjustments")
 ```
 ```{r}
-df$new_deaths <- ifelse(df$date =="2021-02-12",mean(df$new_deaths,na.rm = TRUE),df$new_deaths)
-df$new_deaths <- ifelse(df$date =="2021-02-13",mean(df$new_deaths,na.rm = TRUE),df$new_deaths)
-df$new_deaths <- ifelse(df$date =="2021-02-11",mean(df$new_deaths,na.rm = TRUE),df$new_deaths)
+# df$new_deaths <- ifelse(df$date =="2021-02-12",mean(df$new_deaths,na.rm = TRUE),df$new_deaths)
+# df$new_deaths <- ifelse(df$date =="2021-02-13",mean(df$new_deaths,na.rm = TRUE),df$new_deaths)
+# df$new_deaths <- ifelse(df$date =="2021-02-11",mean(df$new_deaths,na.rm = TRUE),df$new_deaths)
 ```
 
 ## Looking closer at the numbers for Feb 7 - 17
 
 ```{r}
-df %>% filter(date >="2021-02-07" & date <= "2021-02-14") %>% ggplot(aes(x=date,y=new_deaths)) + geom_col() +
-  labs(title = "After Adjustments")
+# df %>% filter(date >="2021-02-07" & date <= "2021-02-14") %>% # ggplot(aes(x=date,y=new_deaths)) + geom_col() +
+#   labs(title = "After Adjustments")
 ```
 
 ### Basic Plots: Deaths
 
 ```{r}
 
-df$MAD <- movavg(df$new_deaths,14,type="e")
-buckeye <- df %>% filter(date >="2020-10-01") 
-ggplot(buckeye) + geom_line(aes(x=date,y=MAD),lwd=1,col="red") + 
-    labs(title="Ohio Deaths ( 14 Day Moving Average)",y="14 Day Moivng Average",
-       x="Dates Starting with Dec  1,2020") + ylim(0,150) +
-  geom_smooth(aes(x=date,y=MAD),method="loess",span=0.1)
-  
-df %>% select(new_deaths) %>% diagnose_numeric() %>% flextable()
+# df$MAD <- movavg(df$new_deaths,14,type="e")
+# buckeye <- df %>% filter(date >="2020-10-01") 
+# ggplot(buckeye) + geom_line(aes(x=date,y=MAD),lwd=1,col="red") + 
+#     labs(title="Ohio Deaths ( 14 Day Moving Average)",y="14 Day Moivng Average",
+#        x="Dates Starting with Dec  1,2020") + ylim(0,150) +
+#   geom_smooth(aes(x=date,y=MAD),method="loess",span=0.1)
+#   
+# df %>% select(new_deaths) %>% diagnose_numeric() %>% flextable()
 ```
 ```{r}
-# df %>% group_by(date) %>%
-#   summarise_by_time(date,.by = "week",Deaths =sum(new_deaths)) %>%
-#   ggplot() + geom_line(aes(x=date,y=Deaths,col="Deaths"),lwd=2) +
-#   labs(title = "Ohio Covid-19 Deaths by Week")
+df %>% filter(date >=Sys.Date() - 365) %>% group_by(date) %>%
+  summarise_by_time(date,.by = "week",Deaths =sum(new_deaths)) %>%
+  ggplot() + geom_line(aes(x=date,y=Deaths,col="Deaths"),lwd=2) +
+  labs(title = "Ohio Covid-19 Deaths by Week")
 ```
 
 ### Basic Plots: Cases 
@@ -73,7 +73,7 @@ df %>% select(new_deaths) %>% diagnose_numeric() %>% flextable()
 
 ```{r}
 df$MAC <- movavg(df$new_cases,7,type = "e")
-buckeye <- df %>% filter(date >="2020-10-01") 
+buckeye <- df %>% filter(date >=Sys.Date() - 365) 
 ggplot(buckeye) + geom_line(aes(x=date,y=new_cases),lwd=1,col="red") +
   labs(title="Ohio Cases (+ Loess fitted Curve)",y="Lowaa Fitted Curve",
        x="Dates Starting with Dec. 1,2020") +
