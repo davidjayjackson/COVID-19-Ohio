@@ -48,19 +48,9 @@ df <- df[order(df$date),]
 #   labs(title = "After Adjustments")
 ```
 
-### Basic Plots: Deaths
+### Basic Plots: Deaths and Cases
 
-```{r}
 
-# df$MAD <- movavg(df$new_deaths,14,type="e")
-# buckeye <- df %>% filter(date >="2020-10-01") 
-# ggplot(buckeye) + geom_line(aes(x=date,y=MAD),lwd=1,col="red") + 
-#     labs(title="Ohio Deaths ( 14 Day Moving Average)",y="14 Day Moivng Average",
-#        x="Dates Starting with Dec  1,2020") + ylim(0,150) +
-#   geom_smooth(aes(x=date,y=MAD),method="loess",span=0.1)
-#   
-# df %>% select(new_deaths) %>% diagnose_numeric() %>% flextable()
-```
 ```{r}
 df %>% filter(date >=Sys.Date() - 365) %>% group_by(date) %>%
   summarise_by_time(date,.by = "week",Deaths =sum(new_deaths)) %>%
@@ -68,7 +58,14 @@ df %>% filter(date >=Sys.Date() - 365) %>% group_by(date) %>%
   labs(title = "Ohio Covid-19 Deaths by Week")
 ```
 
-### Basic Plots: Cases 
+```{r}
+df %>% group_by(date) %>%
+  summarise_by_time(date,.by = "week",Cases =sum(new_cases)) %>%
+  ggplot() + geom_line(aes(x=date,y=Cases,col="Cases"),lwd=2) +
+  labs(title = "Ohio Covid-19 Cases by Week")
+```
+
+
 
 
 ```{r}
@@ -82,9 +79,3 @@ ggplot(buckeye) + geom_line(aes(x=date,y=new_cases),lwd=1,col="red") +
 df %>% select(new_cases) %>% diagnose_numeric() %>% flextable()
 ```
 
-```{r}
-df %>% group_by(date) %>%
-  summarise_by_time(date,.by = "week",Cases =sum(new_cases)) %>%
-  ggplot() + geom_line(aes(x=date,y=Cases,col="Cases"),lwd=2) +
-  labs(title = "Ohio Covid-19 Cases by Week")
-```
