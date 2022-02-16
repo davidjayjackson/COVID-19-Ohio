@@ -30,15 +30,7 @@ db <- db <- dbConnect(RSQLite::SQLite(),dbname= "../COVID-19-DB/NYTimes.sqlite3"
 df <- dbGetQuery(db,"select date,new_cases,new_deaths from STATESDAILY where state = 'Ohio'")
 df$date <- as.Date(df$date)
 df <- df[order(df$date),] 
-```
-```{r}
-# df %>% filter(date >="2021-02-07" & date <= "2021-02-14") %>% ggplot(aes(x=date,y=new_deaths)) + geom_col() +
-#   labs(title ="Before Adjustments")
-```
-```{r}
-# df$new_deaths <- ifelse(df$date =="2021-02-12",mean(df$new_deaths,na.rm = TRUE),df$new_deaths)
-# df$new_deaths <- ifelse(df$date =="2021-02-13",mean(df$new_deaths,na.rm = TRUE),df$new_deaths)
-# df$new_deaths <- ifelse(df$date =="2021-02-11",mean(df$new_deaths,na.rm = TRUE),df$new_deaths)
+buckeye <- df %>% filter(date >=Sys.Date() - 365) 
 ```
 
 ## Looking closer at the numbers for Feb 7 - 17
@@ -49,6 +41,14 @@ df <- df[order(df$date),]
 ```
 
 ### Basic Plots: Deaths and Cases
+
+```{r}
+ggplot(buckeye) + geom_line(aes(x=date,y=new_deaths),lwd=1,col="red") +
+  labs(title="**Ohio Deaths** (+ Loess fitted Curve)",y="Lowaa Fitted Curve",
+       x="Dates Starting with Dec. 1,2020") +
+  geom_smooth(aes(x=date,y=new_deaths),method="loess",span = 0.1) +
+  ylim(0,400)
+```
 
 
 ```{r}
@@ -65,12 +65,9 @@ df %>% group_by(date) %>%
   labs(title = "Ohio Covid-19 Cases by Week")
 ```
 
-
-
-
 ```{r}
 df$MAC <- movavg(df$new_cases,7,type = "e")
-buckeye <- df %>% filter(date >=Sys.Date() - 365) 
+
 ggplot(buckeye) + geom_line(aes(x=date,y=new_cases),lwd=1,col="red") +
   labs(title="Ohio Cases (+ Loess fitted Curve)",y="Lowaa Fitted Curve",
        x="Dates Starting with Dec. 1,2020") +
@@ -78,4 +75,5 @@ ggplot(buckeye) + geom_line(aes(x=date,y=new_cases),lwd=1,col="red") +
 
 df %>% select(new_cases) %>% diagnose_numeric() %>% flextable()
 ```
+
 
