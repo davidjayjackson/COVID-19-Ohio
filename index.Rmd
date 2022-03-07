@@ -38,13 +38,13 @@ buckeye <- df %>% filter(date >=Sys.Date() - 365)
 
 
 ```{r}
-ggplot(buckeye) + geom_line(aes(x=date,y=new_cases),lwd=1,col="red") +
+ggplot(buckeye) + geom_col(aes(x=date,y=new_cases),lwd=1,col="red") +
   labs(title="Ohio Cases (+ Loess fitted Curve)",y="Lowess Fitted Curve", x="Dates") +
   geom_smooth(aes(x=date,y=new_cases),method="loess",span = 0.1)
 ```
 
 ```{r}
-ggplot(buckeye) + geom_line(aes(x=date,y=new_deaths),lwd=1,col="red") +
+ggplot(buckeye) + geom_col(aes(x=date,y=new_deaths),lwd=1,col="red") +
   labs(title="**Ohio Deaths** (+ Loess fitted Curve)",y="Lowess Fitted Curve",
        x="Dates Starting with Dec. 1,2020") +
   geom_smooth(aes(x=date,y=new_deaths),method="loess",span = 0.1) +
@@ -56,19 +56,17 @@ ggplot(buckeye) + geom_line(aes(x=date,y=new_deaths),lwd=1,col="red") +
 ```{r}
 buckeye %>% group_by(date) %>%
   summarise_by_time(date,.by = "week",Cases =sum(new_cases)) %>%
-  ggplot() + geom_line(aes(x=date,y=Cases,col="Cases"),lwd=2) +
+  ggplot() + geom_col(aes(x=date,y=Cases,col="Cases"),lwd=2) +
   labs(title = "Ohio Covid-19 Cases by Week")
 ```
 ```{r}
 buckeye %>% group_by(date) %>%
   summarise_by_time(date,.by = "week",Deaths =sum(new_deaths)) %>%
-  ggplot() + geom_line(aes(x=date,y=Deaths,col="Deaths"),lwd=2) +
+  ggplot() + geom_col(aes(x=date,y=Deaths,col="Deaths"),lwd=2) +
   labs(title = "Ohio Covid-19 Deaths by Week")
 ```
 
 ### Cases and Deaths by Month
-
-
 
 ```{r}
 buckeye %>% group_by(date) %>%
